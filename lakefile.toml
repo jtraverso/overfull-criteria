@@ -1,0 +1,29 @@
+name = "overfull_criteria"
+version = "0.1.0"
+defaultTargets = ["OverfullCriteria", "OverfullCriteriaChallenge", "OverfullCriteriaSolution"]
+requiresModuleSystem = true
+
+[leanOptions]
+relaxedAutoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.35.0-rc3"
+
+[[require]]
+name = "plantholt_overfull"
+git = "https://github.com/jtraverso/plantholt-overfull-criterion"
+rev = "f8900944da7743b1facd771139c9ebdbfd8aaa28"
+
+[[lean_lib]]
+name = "OverfullCriteria"
+globs = ["OverfullCriteria.+"]
+
+[[lean_lib]]
+name = "OverfullCriteriaChallenge"
+roots = ["OverfullCriteriaChallenge"]
+
+[[lean_lib]]
+name = "OverfullCriteriaSolution"
+roots = ["OverfullCriteriaSolution"]

@@ -1,0 +1,15 @@
+{
+  "challenge_module": "OverfullCriteriaChallenge",
+  "solution_module": "OverfullCriteriaSolution",
+  "theorem_names": [
+    "OverfullCriteria.class_two_iff_overfull_subgraph",
+    "OverfullCriteria.critical_overfull"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}
