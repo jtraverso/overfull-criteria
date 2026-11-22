@@ -18,7 +18,8 @@ in the cited papers are outside the scope of the comparator.
 `Challenge.lean` states the results using Mathlib and local definitions of
 the objects under comparison. `Solution.lean` imports the seven proved
 endpoints. Sources and parameter conventions are recorded in
-`formalization.yaml`.
+`formalization.yaml`. The Palomar configuration for this package is
+`comparator.robust-expanders.json`.
 
 Build the solution with `lake build Solution`. Run
 `lake env lean Audit.lean` to inspect the solution axioms.
