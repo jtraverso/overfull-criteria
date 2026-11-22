@@ -2,14 +2,16 @@
 version: "v0.4"
 
 project:
-  name: "Robust expanders: vertex sampling, Hamilton cycles, spanning linkage and configurations"
+  name: "Robust expanders: spanning structures and Hamilton decompositions"
   description: >-
-    Four Lean results on robust expansion. Fixed-cardinality sampling preserves
+    Seven Lean results on robust expansion. Fixed-cardinality sampling preserves
     robust out-expansion with an explicit expansion parameter and failure bound.
     Sufficiently large robust outexpanders of linear minimum semidegree have a
     Hamilton cycle. Robust graphs of linear minimum degree admit spanning
     vertex-disjoint paths between prescribed pairs. Almost regular robust graphs
     admit edge-disjoint realizations of small layouts with a robust remainder.
+    The final three results prove approximate and exact Hamilton decompositions
+    for regular digraphs and exact Hamilton decompositions for even-regular graphs.
   authors:
     - name: "Juan Pablo Traverso Gianini"
       github: "jtraverso"
@@ -41,16 +43,33 @@ sources:
   - title: "Towards the Overfull Conjecture II"
     authors: ["Guantao Chen", "Jessica McDonald", "Songling Shan"]
     id: "arXiv:2607.02270"
-    location: "Lemmas 3.14 and 3.15."
+    location: "Lemmas 3.14 and 3.15 and Theorem 5.5."
     relationship: adapts
+
+  - title: "Approximate Hamilton decompositions of robustly expanding regular digraphs"
+    authors: ["Deryk Osthus", "Katherine Staden"]
+    id: "arXiv:1206.2810"
+    location: "Theorem 1.1, existence conclusion."
+    relationship: formalizes
+  - title: "Hamilton decompositions of regular expanders: a proof of Kelly's conjecture for large tournaments"
+    authors: ["Daniela Kühn", "Deryk Osthus"]
+    id: "arXiv:1202.6219"
+    location: "Theorem 1.2, existence of directed Hamilton decompositions."
+    relationship: formalizes
+  - title: "Hamilton decompositions of regular expanders: applications"
+    authors: ["Daniela Kühn", "Deryk Osthus"]
+    id: "arXiv:1203.0659"
+    location: "Theorem 1.2, equivalently CMS Theorem 5.5 in the even-degree case."
+    relationship: formalizes
 
 status:
   scope: >-
-    The four compared results are the explicit fixed-size sampling bound, eventual
+    The compared results include the explicit fixed-size sampling bound, eventual
     Hamiltonicity at linear minimum semidegree, spanning linkage, and packing layouts
     in a simple host. Hamiltonicity is stated for fixed positive real robustness
     parameters. The layout theorem has a distinguished flexible occurrence in each
-    layout and uses labelled copies for prescribed edges.
+    layout and uses labelled copies for prescribed edges. The three decomposition
+    statements concern existence. Polynomial running time is outside their scope.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -95,5 +114,18 @@ alignment:
       lean: "OverfullWork.DirectedSpanningConfiguration.cms_lemma_3_14"
       module: "OverfullWork.CMSLayoutPacking"
       status: "adapted"
+
+    - source: "Osthus–Staden Theorem 1.1, existence"
+      lean: "OverfullWork.DirectedRobustExpansion.osthus_staden_theorem_1_1_existence"
+      module: "OverfullWork.OsthusStadenApproximateHamiltonPacking"
+      status: "formalized"
+    - source: "Kühn–Osthus directed decomposition theorem"
+      lean: "OverfullWork.DirectedRobustExpansion.kuhn_osthus_directed_decomposition"
+      module: "OverfullWork.OsthusStadenApproximateHamiltonPacking"
+      status: "formalized"
+    - source: "Chen–McDonald–Shan Theorem 5.5, existence"
+      lean: "OverfullWork.DirectedRobustExpansion.cms_theorem_5_5"
+      module: "OverfullWork.OsthusStadenApproximateHamiltonPacking"
+      status: "formalized"
 
 acknowledgements: "Lean and Mathlib, and the authors of the cited mathematical sources."

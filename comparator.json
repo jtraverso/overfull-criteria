@@ -5,7 +5,10 @@
     "OverfullWork.BipartiteRegularitySource.robust_vertex_sampling_explicit",
     "OverfullWork.DirectedAbsorbingLadder.exists_hamilton_threshold",
     "OverfullWork.RobustSpanningLinkage.cms_lemma_3_15",
-    "OverfullWork.DirectedSpanningConfiguration.cms_lemma_3_14"
+    "OverfullWork.DirectedSpanningConfiguration.cms_lemma_3_14",
+    "OverfullWork.DirectedRobustExpansion.osthus_staden_theorem_1_1_existence",
+    "OverfullWork.DirectedRobustExpansion.kuhn_osthus_directed_decomposition",
+    "OverfullWork.DirectedRobustExpansion.cms_theorem_5_5"
   ],
   "definition_names": [
     "OverfullWork.DirectedRobustExpansion.IsRealRobust",
@@ -13,7 +16,10 @@
     "OverfullWork.RobustExpansion.IsRealRobust",
     "OverfullWork.UniformSubsetSampling.probability",
     "OverfullWork.DirectedSpanningConfiguration.Layout.endpointLoad",
-    "OverfullWork.DirectedSpanningConfiguration.CMSPacking.used"
+    "OverfullWork.DirectedSpanningConfiguration.CMSPacking.used",
+    "OverfullWork.DirectedRobustExpansion.HasSpanningCycle",
+    "OverfullWork.DirectedRobustExpansion.RobustApproximateHamiltonPacking",
+    "OverfullWork.DirectedRobustExpansion.matchingUnion"
   ],
   "permitted_axioms": [
     "propext",

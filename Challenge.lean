@@ -246,3 +246,59 @@ theorem cms_lemma_3_14 (a gap ν τ : ℝ) (ha : 0 < a) (ha₁ : a ≤ 1)
   sorry
 
 end OverfullWork.DirectedSpanningConfiguration
+
+/-! Hamilton decompositions. -/
+namespace OverfullWork.DirectedRobustExpansion
+
+variable {V : Type u} [Fintype V]
+
+def HasSpanningCycle (Adj : V → V → Prop) : Prop :=
+  ∃ T : List V, ∃ x : V, T.Nodup ∧ (∀ v, v ∈ T) ∧ T.head? = some x ∧
+    (T ++ [x]).IsChain Adj
+
+structure DirectedHamiltonDecomposition (D : Digraph V) (k : ℕ) : Type u where
+  factor : Fin k → Digraph V
+  factor_le : ∀ i, factor i ≤ D
+  partition : ∀ v w, D.Adj v w → ∃! i, (factor i).Adj v w
+  degrees : ∀ i v, outDegree (factor i) v = 1 ∧ inDegree (factor i) v = 1
+  spanning : ∀ i, HasSpanningCycle (factor i).Adj
+
+structure HamiltonDecomposition (G : SimpleGraph V) (k : ℕ) : Type u where
+  factor : Fin k → SimpleGraph V
+  factor_le : ∀ i, factor i ≤ G
+  partition : ∀ v w, G.Adj v w → ∃! i, (factor i).Adj v w
+  degrees : ∀ i v, (factor i).degree v = 2
+  spanning : ∀ i, HasSpanningCycle (factor i).Adj
+
+def matchingUnion {t : ℕ} (M : Fin t → Equiv.Perm V) : Digraph V :=
+  ⟨fun v w => ∃ j, M j v = w⟩
+
+def RobustApproximateHamiltonPacking : Prop :=
+  ∀ α : ℝ, 0 < α → ∃ τ : ℝ, 0 < τ ∧
+    ∀ ν η : ℝ, 0 < ν → 0 < η → ∃ N : ℕ,
+    ∀ {V : Type u} [Fintype V] (D : Digraph V) (r : ℕ),
+      N ≤ Fintype.card V → α*(Fintype.card V:ℝ) ≤ (r:ℝ) → IsRealRobust D ν τ →
+      (∀ v, inDegree D v = r ∧ outDegree D v = r) → (∀ v, ¬ D.Adj v v) →
+      ∃ (s : ℕ) (C : Fin s → Equiv.Perm V), (1-η)*(r:ℝ) ≤ (s:ℝ) ∧ matchingUnion C ≤ D ∧
+        (∀ i, HasSpanningCycle (fun x y => C i x = y)) ∧ ∀ i j, i ≠ j → ∀ v, C i v ≠ C j v
+
+theorem osthus_staden_theorem_1_1_existence : RobustApproximateHamiltonPacking.{u} := by
+  sorry
+
+theorem kuhn_osthus_directed_decomposition (α : ℝ) (hα : 0 < α) :
+    ∃ τ : ℝ, 0 < τ ∧
+      ∀ ν : ℝ, 0 < ν → ∃ N : ℕ, ∀ {V : Type u} [Fintype V]
+        (G : Digraph V) (r : ℕ), N ≤ Fintype.card V →
+        α*(Fintype.card V:ℝ) ≤ (r:ℝ) → IsRealRobust G ν τ →
+        (∀ v, outDegree G v = r ∧ inDegree G v = r) → (∀ v, ¬ G.Adj v v) →
+        Nonempty (DirectedHamiltonDecomposition G r) := by
+  sorry
+
+theorem cms_theorem_5_5 (α : ℝ) (hα : 0 < α) :
+    ∃ τ : ℝ, 0 < τ ∧ ∀ ν : ℝ, 0 < ν → ∃ N : ℕ,
+      ∀ {V : Type u} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj] (k : ℕ),
+        N ≤ Fintype.card V → α*(Fintype.card V:ℝ) ≤ 2*(k:ℝ) → RobustExpansion.IsRealRobust G ν τ →
+        (∀ v, G.degree v = 2*k) → Nonempty (HamiltonDecomposition G k) := by
+  sorry
+
+end OverfullWork.DirectedRobustExpansion
