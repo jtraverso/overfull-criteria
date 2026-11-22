@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Robust expanders: vertex sampling, Hamilton cycles, spanning linkage and configurations"
+  description: >-
+    Four Lean results on robust expansion. Fixed-cardinality sampling preserves
+    robust out-expansion with an explicit expansion parameter and failure bound.
+    Sufficiently large robust outexpanders of linear minimum semidegree have a
+    Hamilton cycle. Robust graphs of linear minimum degree admit spanning
+    vertex-disjoint paths between prescribed pairs. Almost regular robust graphs
+    admit edge-disjoint realizations of small layouts with a robust remainder.
+  authors:
+    - name: "Juan Pablo Traverso Gianini"
+      github: "jtraverso"
+  responsible_maintainers:
+    - name: "Juan Pablo Traverso Gianini"
+      github: "jtraverso"
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C45", "05C38", "05C20", "05C80", "68V20"]
+
+sources:
+  - title: "Hamilton cycles in sparse robustly expanding digraphs"
+    authors: ["Allan Lo", "Viresh Patel"]
+    id: "arXiv:1507.04472"
+    location: "Theorem 1.3, the Hamilton cycle conclusion at an eventual threshold for fixed parameters and linear minimum semidegree."
+    relationship: adapts
+  - title: "Linear arboricity of robust expanders"
+    authors: ["Yuping Gao", "Songling Shan"]
+    id: "arXiv:2405.18494"
+    location: "Lemma 2.8 and Theorem 2.12."
+    relationship: adapts
+  - title: "Path decompositions of tournaments"
+    authors: ["António Girão", "Bertille Granet", "Daniela Kühn", "Allan Lo", "Deryk Osthus"]
+    id: "arXiv:2010.14158"
+    location: "Lemmas 7.3 and 14.3."
+    relationship: adapts
+  - title: "Towards the Overfull Conjecture II"
+    authors: ["Guantao Chen", "Jessica McDonald", "Songling Shan"]
+    id: "arXiv:2607.02270"
+    location: "Lemmas 3.14 and 3.15."
+    relationship: adapts
+
+status:
+  scope: >-
+    The four compared results are the explicit fixed-size sampling bound, eventual
+    Hamiltonicity at linear minimum semidegree, spanning linkage, and packing layouts
+    in a simple host. Hamiltonicity is stated for fixed positive real robustness
+    parameters. The layout theorem has a distinguished flexible occurrence in each
+    layout and uses labelled copies for prescribed edges.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-6"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4, Mathlib, local Lake builds and scripted axiom checks under author direction."
+  spend_usd: "not tracked"
+  notes: "The proof development and extraction were AI-assisted under human direction."
+
+fidelity:
+  divergences: >-
+    The proof of sampling uses two-sided bipartite regularity and states explicit
+    real-parameter bounds. The Lo–Patel interface specializes to sufficiently
+    large digraphs of linear minimum semidegree. The two CMS interfaces make the
+    parameter hierarchy and the representation of fixed edge occurrences explicit.
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "See the verification commands and the independently stated Challenge module."
+
+alignment:
+  namespace: "OverfullWork"
+  statements:
+    - source: "Gao–Shan Lemma 2.8 and Girão–Granet–Kühn–Lo–Osthus Lemma 14.3"
+      lean: "OverfullWork.BipartiteRegularitySource.robust_vertex_sampling_explicit"
+      module: "OverfullWork.RobustVertexSamplingTheorem"
+      status: "adapted"
+    - source: "Lo–Patel Theorem 1.3"
+      lean: "OverfullWork.DirectedAbsorbingLadder.exists_hamilton_threshold"
+      module: "OverfullWork.RealDirectedRobustHamilton"
+      status: "adapted"
+    - source: "Chen–McDonald–Shan Lemma 3.15"
+      lean: "OverfullWork.RobustSpanningLinkage.cms_lemma_3_15"
+      module: "OverfullWork.RealRobustSpanningLinkage"
+      status: "adapted"
+    - source: "Chen–McDonald–Shan Lemma 3.14"
+      lean: "OverfullWork.DirectedSpanningConfiguration.cms_lemma_3_14"
+      module: "OverfullWork.CMSLayoutPacking"
+      status: "adapted"
+
+acknowledgements: "Lean and Mathlib, and the authors of the cited mathematical sources."

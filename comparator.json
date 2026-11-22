@@ -1,0 +1,24 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "OverfullWork.BipartiteRegularitySource.robust_vertex_sampling_explicit",
+    "OverfullWork.DirectedAbsorbingLadder.exists_hamilton_threshold",
+    "OverfullWork.RobustSpanningLinkage.cms_lemma_3_15",
+    "OverfullWork.DirectedSpanningConfiguration.cms_lemma_3_14"
+  ],
+  "definition_names": [
+    "OverfullWork.DirectedRobustExpansion.IsRealRobust",
+    "OverfullWork.DirectedRobustExpansion.IsVertexSamplingRobust",
+    "OverfullWork.RobustExpansion.IsRealRobust",
+    "OverfullWork.UniformSubsetSampling.probability",
+    "OverfullWork.DirectedSpanningConfiguration.Layout.endpointLoad",
+    "OverfullWork.DirectedSpanningConfiguration.CMSPacking.used"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}
