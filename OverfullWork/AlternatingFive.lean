@@ -25,7 +25,7 @@ def unitEdge (u v : V) (hne : u≠v) : MultiGraph V where
     have hn : e≠s(u,v) := by
       intro h
       subst e
-      exact hne (Sym2.isDiag_iff_proj_eq.mp he)
+      exact hne (Sym2.mk_isDiag_iff.mp he)
     simp only [if_neg hn]
 
 theorem degree_unitEdge (u v : V) (hne : u≠v) (z : V) :

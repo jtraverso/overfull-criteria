@@ -149,9 +149,7 @@ theorem card_cls_le {i : ℤ} (hi : i ≤ D.q + 2) : ((#(D.cls G i) : ℕ) : ℤ
   set B := (D.cls G i).filter fun v => D.side v = false
   have hAB : #(D.cls G i) = #A + #B := by
     rw [← card_filter_add_card_filter_not (p := fun v => D.side v = true)]
-    congr 2
-    ext v
-    cases hv : D.side v <;> simp [B, hv]
+    congr 2 <;> (ext v; cases hv : D.side v <;> simp [B, hv])
   -- the left part sits in an interval of indices
   have hA : ((#A : ℕ) : ℤ) ≤ D.q + 2 - i := by
     have hsub : ∀ v ∈ A, D.idx v ∈ Finset.Icc (i + D.t - D.m - 1) (D.m + 1) := by

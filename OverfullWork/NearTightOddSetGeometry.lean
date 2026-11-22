@@ -182,9 +182,9 @@ theorem edge_count_le_cover_degree_sum (G : SimpleGraph V) [DecidableRel G.Adj]
     | hf u v =>
       have hxy : G.Adj u v := by simpa only [mem_edgeFinset,mem_edgeSet] using he
       rcases hcover u v hxy with hu|hv
-      · exact mem_biUnion.mpr ⟨u,hu,(G.mem_incidenceFinset _ _).mpr
+      · exact mem_biUnion.mpr ⟨u,hu,G.mem_incidenceFinset.mpr
           (G.mk'_mem_incidenceSet_left_iff.mpr hxy)⟩
-      · exact mem_biUnion.mpr ⟨v,hv,(G.mem_incidenceFinset _ _).mpr
+      · exact mem_biUnion.mpr ⟨v,hv,G.mem_incidenceFinset.mpr
           (G.mk'_mem_incidenceSet_right_iff.mpr hxy)⟩
   calc
     _ ≤ (H.biUnion (fun v => G.incidenceFinset v)).card := card_le_card hsub

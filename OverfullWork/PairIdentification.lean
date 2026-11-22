@@ -64,12 +64,12 @@ theorem source_incidence_card (G : SimpleGraph V) [DecidableRel G.Adj] (a : V) :
   rw [←G.card_incidenceFinset_eq_degree a]
   apply card_bij (fun e _ => e.val)
   · intro e he
-    exact (G.mem_incidenceFinset a e.val).mpr
+    exact G.mem_incidenceFinset.mpr
       ((G.edge_mem_incidenceSet_iff).mpr (mem_filter.mp he).2)
   · intro e _ f _ hef
     exact Subtype.ext hef
   · intro e he
-    have hi : e∈G.incidenceSet a:=(G.mem_incidenceFinset a e).mp he
+    have hi : e∈G.incidenceSet a:=G.mem_incidenceFinset.mp he
     exact ⟨⟨e,hi.1⟩,mem_filter.mpr ⟨mem_univ _,hi.2⟩,rfl⟩
 
 theorem degree_centre (G : SimpleGraph V) [DecidableRel G.Adj]
