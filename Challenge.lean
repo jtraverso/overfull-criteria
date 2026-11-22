@@ -198,14 +198,14 @@ variable [Fintype I]
 
 /-- Flexible occurrences incident to the given vertex, in the indicated
 direction. This counts repeated ordered endpoint pairs with multiplicity. -/
-noncomputable def Layout.endpointLoad (L : Layout V I) (incoming : Bool) (v : V) : ℕ :=
+noncomputable def Layout.endpointLoad {V I : Type*} [Fintype I] (L : Layout V I) (incoming : Bool) (v : V) : ℕ :=
   ∑ i : {i // i ∉ L.fixed}, if v = (if incoming then L.target i.val else L.source i.val)
     then 1 else 0
 
 end
 
 /-- The host edges underlying a subdigraph of an orientation. -/
-def hostEdges (G : SimpleGraph V) (U : Digraph V) : SimpleGraph V where
+def hostEdges {V : Type*} (G : SimpleGraph V) (U : Digraph V) : SimpleGraph V where
   Adj x y := G.Adj x y ∧ (U.Adj x y ∨ U.Adj y x)
   symm := ⟨fun _ _ h => ⟨h.1.symm,h.2.symm⟩⟩
   loopless := ⟨fun _ h => G.ne_of_adj h.1 rfl⟩
