@@ -18,9 +18,9 @@ open scoped Classical
 universe u
 set_option maxHeartbeats 800000
 
-private def symmetric {V : Type*} (G : SimpleGraph V) : Digraph V := ⟨G.Adj⟩
+def symmetric {V : Type*} (G : SimpleGraph V) : Digraph V := ⟨G.Adj⟩
 
-private theorem symmetric_robust {V : Type*} [Fintype V] [DecidableEq V]
+theorem symmetric_robust {V : Type*} [Fintype V] [DecidableEq V]
     (G : SimpleGraph V) [DecidableRel G.Adj] (ν τ : ℝ)
     (h : RobustExpansion.IsRealRobust G ν τ) :
     DirectedRobustExpansion.IsRealRobust (symmetric G) ν τ := by

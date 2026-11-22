@@ -1,0 +1,22 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "OverfullWork.CMSTrimmingRound.cms_theorem_1_3",
+    "OverfullWork.Gate8J.cms_theorem_1_4"
+  ],
+  "definition_names": [
+    "SimpleGraph.EdgeColorable",
+    "SimpleGraph.HasOverfullSubgraph",
+    "OverfullWork.PrunedCore.neighboursIn",
+    "OverfullWork.RobustExpansion.realNeighbourhood",
+    "OverfullWork.RobustExpansion.IsRealRobust",
+    "OverfullWork.CMSTrimmingRound.initialExceptionalSet"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}

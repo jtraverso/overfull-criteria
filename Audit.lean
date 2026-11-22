@@ -2,11 +2,6 @@ module
 
 import Solution
 
-#print axioms OverfullWork.BipartiteRegularitySource.robust_vertex_sampling_explicit
-#print axioms OverfullWork.DirectedAbsorbingLadder.exists_hamilton_threshold
-#print axioms OverfullWork.RobustSpanningLinkage.cms_lemma_3_15
-#print axioms OverfullWork.DirectedSpanningConfiguration.cms_lemma_3_14
-
-#print axioms OverfullWork.DirectedRobustExpansion.osthus_staden_theorem_1_1_existence
-#print axioms OverfullWork.DirectedRobustExpansion.kuhn_osthus_directed_decomposition
-#print axioms OverfullWork.DirectedRobustExpansion.cms_theorem_5_5
+#print axioms OverfullWork.CMSTrimmingRound.cms_theorem_1_3
+#print axioms OverfullWork.Gate8J.cms_theorem_1_4
+#print axioms OverfullWork.Gate8J.cms_above_half_goal

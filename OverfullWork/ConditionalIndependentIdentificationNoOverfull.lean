@@ -84,13 +84,15 @@ private theorem cut_bound_singleton (M : MultiGraph (Option W)) (v : Option W) :
 /-- Finite star-multigraph criterion. The only outside obstruction input
 is absence of overfull odd sets avoiding the centre; the actual image
 wrapper below obtains that property from the original simple graph. -/
-theorem no_overfull_of_budget (M : MultiGraph (Option W)) (D B h : ℕ)
+theorem no_overfull_of_budget_and_localization (M : MultiGraph (Option W)) (D B h : ℕ)
     (hdeg : ∀v,M.degree v≤D) (hstar : M.IsStarAt none)
     (hmu : ∀v,M.mult s(none,v)≤h)
     (hmin : ∀w,M.degree none≤M.degree (some w))
     (hodd : Odd (Fintype.card W))
     (hbudget : (∑v∈(univ:Finset (Option W)).erase none,(D-M.degree v))+M.degree none≤D+B)
-    (hgap : Fintype.card W+B+2*h≤2*D+2)
+    (hLocal : ∀ S : Finset (Option W),Odd S.card → none ∈ S →
+      D*(S.card-1) < M.twiceInternal S →
+      Sᶜ.card+B ≤ D ∨ (S.card-1)+2*h ≤ D+1)
     (haway : ∀S : Finset (Option W),Odd S.card → none∉S →
       M.twiceInternal S≤D*(S.card-1)) : ¬M.HasOverfullSubset D := by
   apply (M.noOverfull_iff_odd_bounds D hdeg).mpr
@@ -98,7 +100,6 @@ theorem no_overfull_of_budget (M : MultiGraph (Option W)) (D B h : ℕ)
   by_cases hSn:none∈S
   · let T:=Sᶜ
     have hTn : none∉T:=notMem_compl.mpr hSn
-    have hsize : S.card+T.card=Fintype.card W+1 := by simp [T,Fintype.card_option]
     have hSp : 1≤S.card:=by obtain ⟨k,hk⟩:=hSodd;omega
     have hTeven : Even (Fintype.card (Option W)) := by
       rw [Fintype.card_option]
@@ -127,8 +128,11 @@ theorem no_overfull_of_budget (M : MultiGraph (Option W)) (D B h : ℕ)
       | none => exact (hvn rfl).elim
       | some w => exact hmin w
     · have hTtwo : 2≤T.card:=by omega
-      by_cases hsmall:T.card+B≤D
+      by_contra! hOver
+      apply Nat.not_le_of_lt hOver
+      rcases hLocal S hSodd hSn hOver with hsmall | hcap
       · apply hcut_implies
+        change T.card+B ≤ D at hsmall
         have hdef : (∑v∈T,(D-M.degree v))≤
             ∑v∈(univ:Finset (Option W)).erase none,(D-M.degree v) := by
           apply sum_le_sum_of_subset_of_nonneg
@@ -152,8 +156,7 @@ theorem no_overfull_of_budget (M : MultiGraph (Option W)) (D B h : ℕ)
             _ = D*((T.card-1)+1) := by ring
             _ = _ := by rw [Nat.sub_add_cancel (by omega : 1≤T.card)]
         omega
-      · have hcap : (S.card-1)+2*h≤D+1 := by omega
-        have hi:=internal_bound_with_centre M hstar h hmu S hSn
+      · have hi:=internal_bound_with_centre M hstar h hmu S hSn
         by_cases hS1:S.card=1
         · rw [hS1] at hi ⊢
           simpa using hi
@@ -161,6 +164,23 @@ theorem no_overfull_of_budget (M : MultiGraph (Option W)) (D B h : ℕ)
           have hm:=Nat.mul_le_mul_left (S.card-1) hsub
           nlinarith
   · exact haway S hSodd hSn
+
+theorem no_overfull_of_budget (M : MultiGraph (Option W)) (D B h : ℕ)
+    (hdeg : ∀v,M.degree v≤D) (hstar : M.IsStarAt none)
+    (hmu : ∀v,M.mult s(none,v)≤h)
+    (hmin : ∀w,M.degree none≤M.degree (some w))
+    (hodd : Odd (Fintype.card W))
+    (hbudget : (∑v∈(univ:Finset (Option W)).erase none,(D-M.degree v))+M.degree none≤D+B)
+    (hgap : Fintype.card W+B+2*h≤2*D+2)
+    (haway : ∀S : Finset (Option W),Odd S.card → none∉S →
+      M.twiceInternal S≤D*(S.card-1)) : ¬M.HasOverfullSubset D := by
+  apply no_overfull_of_budget_and_localization M D B h hdeg hstar hmu hmin hodd hbudget _ haway
+  intro S _ hSn _
+  have hSize : S.card+Sᶜ.card=Fintype.card W+1 := by simp
+  have hPos : 0 < S.card := card_pos.mpr ⟨none,hSn⟩
+  by_cases hSmall : Sᶜ.card+B ≤ D
+  · exact Or.inl hSmall
+  · exact Or.inr (by omega)
 
 section ActualImage
 variable {V : Type*} [Fintype V] [DecidableEq V]

@@ -197,6 +197,35 @@ private theorem matching_sup_edge_colourable (M : SimpleGraph V) (hm : OneFactor
     grind
   exact OneFactor.colorable_sup_matching hdis hedge (matching_colourable_one M hm)
 
+/-- In the even case the chosen skeleton is the matching itself. -/
+theorem isSkeleton_of_even_matching (G M : SimpleGraph V) [DecidableRel M.Adj]
+    (W : Finset V) (hLe : M ≤ G) (hm : OneFactor.IsMatchingGraph M)
+    (hCover : ∀ w ∈ W,∃! v,M.Adj w v)
+    (hCross : ∀ u v,M.Adj u v → (u ∈ W ∧ v ∉ W) ∨ (v ∈ W ∧ u ∉ W))
+    (hSize : 2 ≤ W.card) (hEven : Even W.card) (hColour : M.EdgeColorable 2) :
+    IsSkeleton G M W := by
+  have hCount := matching_edge_count M W hCover hCross
+  have hOne : ∀ w ∈ W,M.degree w = 1 := fun w hw =>
+    degree_eq_one_iff_existsUnique_adj.mpr (hCover w hw)
+  have hDeg : ∀ v,M.degree v ≤ 2 := fun v => (matching_degree_le_one M hm v).trans (by omega)
+  have hTwos : (Wᶜ.filter fun v => M.degree v = 2).card = 0 := by
+    apply card_eq_zero.mpr
+    apply eq_empty_of_forall_notMem
+    intro v hv
+    have h := (mem_filter.mp hv).2
+    have h' := matching_degree_le_one M hm v
+    omega
+  have hEvenM : Even M.edgeFinset.card := by rwa [hCount]
+  have hLower : 2+2*(Wᶜ.filter fun v => M.degree v = 2).card ≤ M.edgeFinset.card := by
+    rw [hTwos,hCount]
+    omega
+  obtain ⟨hOuterEven,hOuterSize⟩ := outer_endpoint_budget M W hDeg hCross hEvenM hLower
+  have hLowEnds : 2 ≤ (W.filter fun w => M.degree w = 1).card := by
+    rwa [filter_eq_self.mpr hOne]
+  refine ⟨hLe,matching_isAcyclic M hm,hDeg,?_,hLowEnds,hOuterEven,hOuterSize,by omega,hCross,hColour⟩
+  intro w hw
+  rw [hOne w hw]
+
 /-- The exact even/odd skeleton choice from two actual crossing matchings.
 Only one edge of the second matching is used in the odd case. -/
 theorem exists_skeleton_of_two_matchings (G M₁ M₂ : SimpleGraph V)
@@ -217,27 +246,8 @@ theorem exists_skeleton_of_two_matchings (G M₁ M₂ : SimpleGraph V)
   have hone : ∀w∈W,M₁.degree w=1 := fun w hw => degree_eq_one_iff_existsUnique_adj.mpr (hcover₁ w hw)
   have hcolUnion := (two_matching_union_colouring M₁ M₂ hm₁ hm₂ hdis).1
   by_cases hEven : Even W.card
-  · have hdeg : ∀v,M₁.degree v≤2 := fun v => (matching_degree_le_one M₁ hm₁ v).trans (by omega)
-    have htwos : (Wᶜ.filter fun v => M₁.degree v=2).card=0 := by
-      apply card_eq_zero.mpr
-      apply eq_empty_of_forall_notMem
-      intro v hv
-      have hh := (mem_filter.mp hv).2
-      have hd := matching_degree_le_one M₁ hm₁ v
-      omega
-    have heven : Even M₁.edgeFinset.card := by rwa [hcount]
-    have hlower : 2+2*(Wᶜ.filter fun v => M₁.degree v=2).card≤M₁.edgeFinset.card := by
-      rw [htwos,hcount]
-      omega
-    obtain ⟨houterEven,houterLow⟩ := outer_endpoint_budget M₁ W hdeg hcross₁ heven hlower
-    have hlowEnds : 2≤(W.filter fun w => M₁.degree w=1).card := by
-      have heq : W.filter (fun w => M₁.degree w=1)=W := filter_eq_self.mpr hone
-      simpa only [heq] using hsize
-    refine ⟨M₁,⟨hM₁,matching_isAcyclic M₁ hm₁,hdeg,?_,hlowEnds,houterEven,houterLow,
-      by omega,hcross₁,?_⟩⟩
-    · intro w hw
-      rw [hone w hw]
-    · exact Critical.colourable_of_copy (Copy.ofLE M₁ (M₁⊔M₂) le_sup_left) hcolUnion
+  · exact ⟨M₁,isSkeleton_of_even_matching G M₁ W hM₁ hm₁ hcover₁ hcross₁ hsize hEven
+      (Critical.colourable_of_copy (Copy.ofLE M₁ (M₁⊔M₂) le_sup_left) hcolUnion)⟩
   · have hOdd : Odd W.card := Nat.not_even_iff_odd.mp hEven
     have hthree : 3≤W.card := by obtain ⟨k,hk⟩ := hOdd;omega
     obtain ⟨a,ha⟩ := card_pos.mp (show 0<W.card by omega)

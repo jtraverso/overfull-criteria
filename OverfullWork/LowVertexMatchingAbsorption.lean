@@ -84,16 +84,15 @@ theorem exists_injection_of_degree_comparison {A B : Type*} [Fintype A] [Fintype
   exact (Fintype.all_card_le_filter_rel_iff_exists_injective r).mp
     (hall_of_degree_comparison r hpos hdeg)
 
-/-- Strict degree comparison survives removal of the first transversal,
-so two pointwise disjoint transversals are constructed. -/
-theorem exists_two_injections_of_strict_degree_comparison
+/-- Strict degree comparison supplies a disjoint matching after
+removing any chosen injection supported on the relation. -/
+theorem exists_second_injection_of_strict_degree_comparison
     {A B : Type*} [Fintype A] [Fintype B] (r : A → B → Prop) [DecidableRel r]
     (hpos : ∀a,0<(univ.filter (r a)).card)
-    (hdeg : ∀a b,r a b → (univ.filter (fun a => r a b)).card<(univ.filter (r a)).card) :
-    ∃f g : A → B,Function.Injective f ∧ Function.Injective g ∧
-      (∀a,r a (f a)) ∧ (∀a,r a (g a)) ∧ ∀a,f a≠g a := by
+    (hdeg : ∀a b,r a b → (univ.filter (fun a => r a b)).card<(univ.filter (r a)).card)
+    (f : A → B) (hfr : ∀a,r a (f a)) :
+    ∃g : A → B,Function.Injective g ∧ (∀a,r a (g a)) ∧ ∀a,f a≠g a := by
   classical
-  obtain ⟨f,hf,hfr⟩ := exists_injection_of_degree_comparison r hpos (fun a b h => (hdeg a b h).le)
   let r' := fun a b => r a b ∧ b≠f a
   have hrow : ∀a,(univ.filter (r' a)).card+1=(univ.filter (r a)).card := by
     intro a
@@ -121,7 +120,20 @@ theorem exists_two_injections_of_strict_degree_comparison
     have hr := hrow a
     omega
   obtain ⟨g,hg,hgr⟩ := exists_injection_of_degree_comparison r' hpos' hdeg'
-  exact ⟨f,g,hf,hg,hfr,fun a => (hgr a).1,fun a => (hgr a).2.symm⟩
+  exact ⟨g,hg,fun a => (hgr a).1,fun a => (hgr a).2.symm⟩
+
+/-- Strict degree comparison survives removal of the first transversal,
+so two pointwise disjoint transversals are constructed. -/
+theorem exists_two_injections_of_strict_degree_comparison
+    {A B : Type*} [Fintype A] [Fintype B] (r : A → B → Prop) [DecidableRel r]
+    (hpos : ∀a,0<(univ.filter (r a)).card)
+    (hdeg : ∀a b,r a b → (univ.filter (fun a => r a b)).card<(univ.filter (r a)).card) :
+    ∃f g : A → B,Function.Injective f ∧ Function.Injective g ∧
+      (∀a,r a (f a)) ∧ (∀a,r a (g a)) ∧ ∀a,f a≠g a := by
+  classical
+  obtain ⟨f,hf,hfr⟩ := exists_injection_of_degree_comparison r hpos (fun a b h => (hdeg a b h).le)
+  obtain ⟨g,hg,hgr,hfg⟩ := exists_second_injection_of_strict_degree_comparison r hpos hdeg f hfr
+  exact ⟨f,g,hf,hg,hfr,hgr,hfg⟩
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
