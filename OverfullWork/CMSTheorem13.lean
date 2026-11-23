@@ -22,8 +22,8 @@ set_option maxHeartbeats 4500000 in
 few vertices of large deficit. The size threshold is uniform for all
 witnesses `η` up to the selected bound. -/
 theorem cms_theorem_1_3 (α : ℝ) (hα : 0 < α) :
-    ∃ τ : ℝ, 0 < τ ∧ ∀ ν : ℝ, 0 < ν →
-      ∃ ηMax : ℝ, 0 < ηMax ∧ ∃ N : ℕ,
+    ∃ τ : ℝ, 0 < τ ∧ τ < 1/2 ∧ ∀ ν : ℝ, 0 < ν →
+      ∃ ηMax : ℝ, 0 < ηMax ∧ ηMax < 1 ∧ ∃ N : ℕ,
         ∀ {V : Type u} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj],
           let n := Fintype.card V
           N ≤ n → α*(n:ℝ) ≤ (G.maxDegree:ℝ) → IsRealRobust G ν τ →
@@ -32,7 +32,7 @@ theorem cms_theorem_1_3 (α : ℝ) (hα : 0 < α) :
             ((initialExceptionalSet G η).card:ℝ) ≤ η^2*(n:ℝ)) →
           (G.EdgeColorable G.maxDegree ↔ ¬G.HasOverfullSubgraph) := by
   by_cases hLarge : 1 < α
-  · refine ⟨1/4,by norm_num,fun _ _ => ⟨1/4,by norm_num,1,?_⟩⟩
+  · refine ⟨1/4,by norm_num,by norm_num,fun _ _ => ⟨1/4,by norm_num,by norm_num,1,?_⟩⟩
     intro V _ _ G _ n hN hDegree _ _ _
     letI : Nonempty V := Fintype.card_pos_iff.mp hN
     have hn : 0 < (n:ℝ) := by exact_mod_cast hN
@@ -44,12 +44,14 @@ theorem cms_theorem_1_3 (α : ℝ) (hα : 0 < α) :
   obtain ⟨τMax,hτMax,hRun⟩ := cms_operation_4_1_round_limit.{u} α hα hα₁
   obtain ⟨σ,hσ,hDense⟩ := CanonicalRegularization.cms_no_dense_trimming_stop_before_final_cleanup.{u}
     (α/3) (by positivity) (by linarith only [hα₁])
-  let τ := min τMax (σ/4)
-  have hτ : 0 < τ := lt_min hτMax (by positivity)
+  let τ := min τMax (min (σ/4) (1/4))
+  have hτ : 0 < τ := lt_min hτMax (lt_min (by positivity) (by norm_num))
+  have hτCap : τ < 1/2 :=
+    ((min_le_right _ _).trans (min_le_right _ _)).trans_lt (by norm_num : (1/4:ℝ) < 1/2)
   have hτσ : 4*τ ≤ σ := by
-    have h : τ ≤ σ/4 := min_le_right _ _
+    have h : τ ≤ σ/4 := (min_le_right _ _).trans (min_le_left _ _)
     linarith only [h]
-  refine ⟨τ,hτ,?_⟩
+  refine ⟨τ,hτ,hτCap,?_⟩
   intro ν hν
   let νRun := min ν τ
   have hνRun : 0 < νRun := lt_min hν hτ
@@ -80,7 +82,7 @@ theorem cms_theorem_1_3 (α : ℝ) (hα : 0 < α) :
   obtain ⟨NRun,hRun⟩ := hRun η hη hηRun'
   obtain ⟨NDense,hDense⟩ := hDense η hη hηDense'
   let N := max NRun (max ⌈6/η^2⌉₊ (2*(NDense+2)))
-  refine ⟨η,hη,N,?_⟩
+  refine ⟨η,hη,hη2.trans_lt (by norm_num),N,?_⟩
   intro V _ _ G dG
   cases Subsingleton.elim dG (fun u v => Classical.propDecidable (G.Adj u v))
   intro n hN hDegree hRob hVAL hSome

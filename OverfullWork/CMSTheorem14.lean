@@ -20,7 +20,7 @@ universe u
 set_option maxHeartbeats 2400000 in
 theorem cms_critical_exclusion : CriticalExclusion.{u} := by
   intro ε hε
-  obtain ⟨τ,hτ,hCMS⟩ := cms_theorem_1_3.{u} (1/2) (by norm_num)
+  obtain ⟨τ,hτ,_,hCMS⟩ := cms_theorem_1_3.{u} (1/2) (by norm_num)
   obtain ⟨q,hq⟩ := exists_nat_gt (max (2:ℝ) (max (5/(16*ε)) (1/τ)))
   have hqNat : 2 ≤ q := by
     exact_mod_cast ((le_max_left (2:ℝ) _).trans hq.le)
@@ -35,7 +35,7 @@ theorem cms_critical_exclusion : CriticalExclusion.{u} := by
       have h' := (div_le_iff₀ hτ).mp h
       linarith only [h'])
   let ν := 1/(4096*(q:ℝ)^2)
-  obtain ⟨η,hη,NCMS,hCMS⟩ := hCMS ν (by positivity)
+  obtain ⟨η,hη,_,NCMS,hCMS⟩ := hCMS ν (by positivity)
   let coefficient := min (1/(262144*(q:ℝ)^3)) (η^3)
   have hCoeff : 0 < coefficient := lt_min (by positivity) (by positivity)
   obtain ⟨D₀,hDeficit⟩ := CaoChenCriticalAverage.deficit_bound.{u} coefficient hCoeff

@@ -64,8 +64,8 @@ noncomputable def initialExceptionalSet (G : SimpleGraph V) [DecidableRel G.Adj]
 /-- The overfull criterion for robust expanders with weak VAL and a small
 set of vertices of large deficit. -/
 theorem cms_theorem_1_3 (α : ℝ) (hα : 0 < α) :
-    ∃ τ : ℝ, 0 < τ ∧ ∀ ν : ℝ, 0 < ν →
-      ∃ ηMax : ℝ, 0 < ηMax ∧ ∃ N : ℕ,
+    ∃ τ : ℝ, 0 < τ ∧ τ < 1/2 ∧ ∀ ν : ℝ, 0 < ν →
+      ∃ ηMax : ℝ, 0 < ηMax ∧ ηMax < 1 ∧ ∃ N : ℕ,
         ∀ {V : Type u} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj],
           let n := Fintype.card V
           N ≤ n → α*(n:ℝ) ≤ (G.maxDegree:ℝ) → IsRealRobust G ν τ →
