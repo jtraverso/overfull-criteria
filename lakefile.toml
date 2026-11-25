@@ -36,3 +36,9 @@ name = "Challenge"
 
 [[lean_lib]]
 name = "Solution"
+
+[[lean_lib]]
+name = "ShanIChallenge"
+
+[[lean_lib]]
+name = "ShanISolution"

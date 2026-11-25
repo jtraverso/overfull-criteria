@@ -1,0 +1,20 @@
+{
+  "challenge_module": "ShanIChallenge",
+  "solution_module": "ShanISolution",
+  "theorem_names": [
+    "OverfullWork.ShanI.shan_v4_theorem_1_3",
+    "OverfullWork.ShanI.shan_v4_theorem_1_4"
+  ],
+  "definition_names": [
+    "SimpleGraph.EdgeColorable",
+    "SimpleGraph.HasOverfullSubgraph",
+    "Overfull.IsClassTwo",
+    "Overfull.IsDeltaCritical"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}
