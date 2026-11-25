@@ -8,7 +8,7 @@ The finite refinement schedule fixes a common order threshold before the graph i
 - [KLOSChallenge.lean](KLOSChallenge.lean) states the theorem and its defining predicates.
 - [KLOSSolution.lean](KLOSSolution.lean) imports the proof in
   [KLOSRobustPartition.lean](OverfullWork/KLOSRobustPartition.lean).
-- [Formalization metadata](formalization.klos-theorem-3-1.yaml) records how the Lean statement
+- [Formalization metadata](OverfullWork/formalization.yaml) records how the Lean statement
   represents the partition and its parameters.
 
 Use the Lean version in `lean-toolchain`.
