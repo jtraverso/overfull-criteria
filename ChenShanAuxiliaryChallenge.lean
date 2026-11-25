@@ -1,12 +1,95 @@
 module
 
-public import OverfullWork.KLOSRobustComponents
-public import OverfullWork.MultigraphCuts
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Analysis.Real.Sqrt
 
 @[expose] public section
 
+open Finset SimpleGraph
+open scoped Classical
+
+namespace OverfullWork.PrunedCore
+
+universe u
+variable {V : Type u} [Fintype V] [DecidableEq V]
+
+def neighboursIn (G : SimpleGraph V) [DecidableRel G.Adj] (T : Finset V) (x : V) : ℕ :=
+  ((G.neighborFinset x).filter fun y => y∈T).card
+
+end OverfullWork.PrunedCore
+
+namespace OverfullWork.KLOS
+
+open PrunedCore
+variable {V : Type*} [Fintype V] [DecidableEq V]
+variable (G : SimpleGraph V) [DecidableRel G.Adj]
+
+/-- Robust neighbours are taken inside `U`, with the threshold measured
+relative to `|U|`. -/
+noncomputable def robustNeighbourhoodIn (ν : ℝ) (U S : Finset V) : Finset V :=
+  U.filter fun v => ν * (U.card : ℝ) ≤ (neighboursIn G S v : ℝ)
+
+/-- Ordinary robust expansion on `U`, with the paper's normalization. -/
+def ExpandsInside (ν τ : ℝ) (U : Finset V) : Prop :=
+  ∀ S : Finset V, S ⊆ U → τ * (U.card : ℝ) ≤ (S.card : ℝ) →
+    (S.card : ℝ) ≤ (1 - τ) * (U.card : ℝ) →
+    (S.card : ℝ) + ν * (U.card : ℝ) ≤ ((robustNeighbourhoodIn G ν U S).card : ℝ)
+
+end OverfullWork.KLOS
+
+namespace SimpleGraph
+
+open Finset
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-- Un **multigrafo lazo-libre** sobre `V`: una multiplicidad en cada par no
+ordenado de vértices, nula en la diagonal (no hay lazos). -/
+structure MultiGraph (V : Type*) where
+  /-- Multiplicidad de cada par no ordenado. -/
+  mult : Sym2 V → ℕ
+  /-- No hay lazos. -/
+  loopless : ∀ e : Sym2 V, e.IsDiag → mult e = 0
+
+namespace MultiGraph
+
+variable (M : MultiGraph V)
+
+/-- Número de aristas de `M`, contadas con multiplicidad. -/
+def edgeCount : ℕ := ∑ e : Sym2 V, M.mult e
+
+/-- Grado de `v` en `M`: suma de multiplicidades de las aristas que lo tocan. -/
+def degree (v : V) : ℕ :=
+  ∑ e ∈ univ.filter (fun e : Sym2 V => v ∈ e), M.mult e
+
+/-- `M` es `k`-regular. -/
+def IsRegularOfDegree (k : ℕ) : Prop := ∀ v : V, M.degree v = k
+
+/-- El multigrafo subyacente a un grafo simple. -/
+def ofSimpleGraph (G : SimpleGraph V) [DecidableRel G.Adj] : MultiGraph V where
+  mult e := if e ∈ G.edgeSet then 1 else 0
+  loopless e he := by
+    have h : e ∉ G.edgeSet := fun hmem => G.not_isDiag_of_mem_edgeSet hmem he
+    simp [h]
+
+
+def restrict (M : MultiGraph V) (S : Finset V) : MultiGraph V where
+  mult e := if e.toFinset ⊆ S then M.mult e else 0
+  loopless e he := by
+    split_ifs
+    · exact M.loopless e he
+    · rfl
+
+def edgesWithin (M : MultiGraph V) (S : Finset V) : ℕ := (M.restrict S).edgeCount
+
+def HasOverfullSubset (M : MultiGraph V) (D : ℕ) : Prop :=
+  ∃ S : Finset V, D * (S.card / 2) < M.edgesWithin S
+
+end MultiGraph
+end SimpleGraph
+
 namespace OverfullWork.ChenShan
-open SimpleGraph Finset KLOS PrunedCore RobustExpansion
+open SimpleGraph Finset KLOS PrunedCore
 
 def auxiliaryOrder (n k : ℕ) : ℕ :=
   max n (k + 1) + if (max n (k + 1)) % 2 = n % 2 then 0 else 1
