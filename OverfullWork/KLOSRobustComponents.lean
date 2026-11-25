@@ -439,7 +439,7 @@ theorem split_of_small_neighbourhood_difference (D : ℕ) (hRegular : ∀ v, G.d
   exact ⟨hDisjParts, hUnionParts, ⟨hU₁size, hU₁cut.trans hCut₁⟩,
     ⟨hU₂size, by linarith only [hCut₂, hU.2, hU₁cut, hBudget]⟩⟩
 
-private theorem incidences_away_sum (A B : Finset V) (hDisjoint : Disjoint A B) :
+theorem incidences_away_sum (A B : Finset V) (hDisjoint : Disjoint A B) :
     incidences G A Bᶜ + incidences G B Aᶜ =
       2 * internalEdges G A + 2 * internalEdges G B + cutEdges G (A ∪ B) := by
   let W := (A ∪ B)ᶜ

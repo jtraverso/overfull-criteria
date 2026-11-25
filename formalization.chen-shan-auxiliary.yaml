@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Robust auxiliary graph realization and regular completion"
+  description: "Lean formalization of Lemmas 3.23 and 3.24 of Chen and Shan, including the simple-graph specialization of the regular completion."
+  authors: ["Juan Pablo Traverso Gianini"]
+  responsible_maintainers: ["Juan Pablo Traverso Gianini"]
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C35", "05C70", "68V20"]
+
+sources:
+  - title: "An Asymptotically Sharp Form of the Overfull Conjecture"
+    authors: ["Guantao Chen", "Songling Shan"]
+    id: "arXiv:2611.32763v1"
+    location: "Section 3.9, Lemmas 3.23 and 3.24 and the paragraph following Lemma 3.24."
+    relationship: formalizes
+
+status:
+  scope: "The two auxiliary completion lemmas and the simple-graph specialization."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-6"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4.35.0-rc3, Mathlib, Lake Comparator and axiom audits."
+  spend_usd: "not tracked"
+  notes: "The Lean development and packaging were AI-assisted under human direction."
+
+fidelity:
+  divergences: "The completed graph is on a disjoint sum. Pairwise multiplicity identities express the two induced graphs and simplicity of the added edges."
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "The challenge states the three results independently of the solution."
+
+alignment:
+  namespace: "OverfullWork.ChenShan"
+  statements:
+    - source: "Lemma 3.23"
+      lean: "OverfullWork.ChenShan.exists_robust_graph_with_prescribed_degrees"
+      module: "OverfullWork.ChenShanCycleRealization"
+      status: "formalized"
+    - source: "Lemma 3.24"
+      lean: "OverfullWork.ChenShan.exists_regular_auxiliary_completion"
+      module: "OverfullWork.ChenShanMultigraphCompletion"
+      status: "formalized"
+    - source: "Simple-graph specialization after Lemma 3.24"
+      lean: "OverfullWork.ChenShan.exists_simple_auxiliary_completion"
+      module: "OverfullWork.ChenShanMultigraphCompletion"
+      status: "formalized"
+
+acknowledgements: "Lean and Mathlib, and the authors of the mathematical source."

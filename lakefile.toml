@@ -42,3 +42,9 @@ name = "KLOSChallenge"
 
 [[lean_lib]]
 name = "KLOSSolution"
+
+[[lean_lib]]
+name = "ChenShanAuxiliaryChallenge"
+
+[[lean_lib]]
+name = "ChenShanAuxiliarySolution"

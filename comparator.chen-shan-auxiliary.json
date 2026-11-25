@@ -1,0 +1,25 @@
+{
+  "challenge_module": "ChenShanAuxiliaryChallenge",
+  "solution_module": "ChenShanAuxiliarySolution",
+  "theorem_names": [
+    "OverfullWork.ChenShan.exists_robust_graph_with_prescribed_degrees",
+    "OverfullWork.ChenShan.exists_regular_auxiliary_completion",
+    "OverfullWork.ChenShan.exists_simple_auxiliary_completion"
+  ],
+  "definition_names": [
+    "OverfullWork.ChenShan.auxiliaryOrder",
+    "OverfullWork.KLOS.ExpandsInside",
+    "OverfullWork.KLOS.robustNeighbourhoodIn",
+    "OverfullWork.PrunedCore.neighboursIn",
+    "SimpleGraph.MultiGraph.IsRegularOfDegree",
+    "SimpleGraph.MultiGraph.HasOverfullSubset",
+    "SimpleGraph.MultiGraph.degree",
+    "SimpleGraph.MultiGraph.ofSimpleGraph"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}
