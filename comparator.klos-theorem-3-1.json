@@ -1,0 +1,19 @@
+{
+  "challenge_module": "KLOSChallenge",
+  "solution_module": "KLOSSolution",
+  "theorem_names": ["OverfullWork.KLOS.exists_robustPartition_regular"],
+  "definition_names": [
+    "OverfullWork.PrunedCore.neighboursIn",
+    "OverfullWork.OddCutDeficit.internalEdges",
+    "OverfullWork.OddCutDeficit.crossingEdges",
+    "OverfullWork.OddCutDeficit.cutEdges",
+    "OverfullWork.KLOS.IsSparseComponent",
+    "OverfullWork.KLOS.CloseToBipartite",
+    "OverfullWork.KLOS.robustNeighbourhoodIn",
+    "OverfullWork.KLOS.ExpandsInside",
+    "OverfullWork.KLOS.ExpandsAcross",
+    "OverfullWork.KLOS.assignmentPart"
+  ],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true
+}

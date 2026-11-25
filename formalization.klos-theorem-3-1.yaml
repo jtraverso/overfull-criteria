@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "The robust component structure of dense regular graphs in Lean"
+  description: >-
+    A formalization of Theorem 3.1 of Kühn, Lo, Osthus, and Staden.
+    Sufficiently large dense regular graphs admit a partition into ordinary
+    and bipartite robust expander components satisfying conditions D1–D7.
+    The refinement, both partition adjustments, and the uniform order
+    threshold are proved in Lean.
+  authors:
+    - "Juan Pablo Traverso Gianini"
+  responsible_maintainers:
+    - "Juan Pablo Traverso Gianini"
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C35", "05C40", "68V20"]
+
+sources:
+  - title: "The robust component structure of dense regular graphs and applications"
+    authors: ["Daniela Kühn", "Allan Lo", "Deryk Osthus", "Katherine Staden"]
+    id: "arXiv:1401.0424"
+    location: "Theorem 3.1 and its proof in Section 4."
+    relationship: formalizes
+
+status:
+  scope: >-
+    Theorem 3.1, including the conditions D1–D7, the finite graph-independent
+    refinement schedule and the final adjustments. The almost-regular extension
+    and Hamiltonicity applications are outside this submission.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-6"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4.35.0-rc3, Mathlib, Lake Comparator and axiom audits."
+  spend_usd: "not tracked"
+  notes: "The Lean development and packaging were AI-assisted under human direction."
+
+fidelity:
+  divergences: >-
+    The partition is represented by the nonempty fibers of a vertex assignment.
+    The part-count bound is stated after multiplying by the regular degree.
+    The auxiliary real-valued function only needs to be positive on (0,1).
+    A common threshold is chosen from the finite list of possible terminal stages.
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "KLOSChallenge states the theorem independently of KLOSSolution."
+
+alignment:
+  namespace: "OverfullWork.KLOS"
+  statements:
+    - source: "Kühn–Lo–Osthus–Staden, Theorem 3.1"
+      lean: "OverfullWork.KLOS.exists_robustPartition_regular"
+      module: "OverfullWork.KLOSRobustPartition"
+      status: "formalized"
+
+acknowledgements: "Lean and Mathlib, and the authors of the mathematical source."
