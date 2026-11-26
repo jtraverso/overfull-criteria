@@ -18,6 +18,12 @@ section RectangularWeights
 
 variable {A B : Type*} [Fintype A] [Fintype B]
 
+/-- Chen–Shan, Lemma 4.11. In a bipartite graph with minimum degree
+at least c times the opposite shore size, where c > 1/2, any two sets of
+signed margins with the same total admit a signed assignment supported
+on the edges. Each prescribed margin has magnitude at most θ times
+the opposite shore size. Each edge weight has magnitude at most
+2θ/(2c − 1). -/
 theorem exists_bounded_rectangular_signed_edge_weights
     (E : A → B → Prop) (r : A → ℝ) (s : B → ℝ) (c θ : ℝ)
     (hc : 1/2 < c) (hθ : 0 ≤ θ)
@@ -53,6 +59,15 @@ section ReserveProbabilities
 
 variable {J : Type*} [Fintype J] {V : J → Type*} [∀ i, Fintype (V i)]
 
+/-- Chen–Shan, Lemma 4.12. The consecutive pairs of a directed
+cycle of classes have minimum degree at least a c fraction of the opposite
+class in each direction, with c > 1/2. Their edge counts are within relative
+error θ of one positive count. At each vertex the indegree and outdegree
+differ by at most θ times the smaller degree. Under the displayed smallness
+conditions on θ and μ, there are sampling probabilities within
+8μθ/(2c − 1) of μ on every edge. Expected indegree and outdegree agree
+at each vertex, and the expected edge count is common across all pairs.
+The formulation uses a permutation of the classes. -/
 theorem exists_balanced_reserve_probabilities [Nonempty J]
     (next : J ≃ J) (E : (i j : J) → V i → V j → Prop)
     (c θ μ e : ℝ) (hc : 1/2 < c) (hθ : 0 ≤ θ) (hθsmall : θ ≤ 1/4)
@@ -113,6 +128,14 @@ section BalancedDeletion
 
 variable {A B W : Type*} [Fintype A] [Fintype B] [Fintype W]
 
+/-- Chen–Shan, Lemma 4.13. For a cyclically oriented dense
+tripartite graph with two equal core classes, the core pair has minimum
+degree exceeding half the core size by a fixed positive fraction. The
+color pairs have few missing neighbors and each vertex has imbalance
+at most ξ times the core size. For sufficiently small parameters a set
+of arcs can be deleted so that indegree and outdegree agree everywhere.
+The deleted subgraph has maximum incident degree at most 5√ξ times
+the core size. -/
 theorem exists_tripartite_balancing_deletion
     (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop)
     (n : ℕ) (η ξ : ℝ) (hη : 0 < η) (hξ : 0 ≤ ξ)
@@ -143,6 +166,13 @@ end MatchingEncoding
 
 section MatchingPacking
 
+/-- Chen–Shan, Lemma 4.14, using Barber, Kühn, Lo, Osthus,
+and Taylor. Each of at most 3bn requests consists of two disjoint equal shores.
+Each associated graph has minimum degree at least half the opposite shore
+size plus 81bλ^(3/2)n. Distinct requests share at most 6λ²n vertices and
+a vertex belongs to at most 2bλn requests. In an ambient set of at most
+3n vertices, the graphs admit pairwise edge-disjoint perfect matchings
+for sufficiently large n. -/
 theorem exists_bklot_bipartite_matching_packing (b : ℕ) (hb : 0 < b) (density : ℝ)
     (hDensity : 0 < density) (_hDensityAtMostOne : density ≤ 1) :
     ∃ n₀ : ℕ, ∀ (n q : ℕ), n₀ ≤ n → q ≤ 3*b*n →
