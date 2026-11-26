@@ -3,6 +3,18 @@
   "packagesDir": ".lake/packages",
   "packages": [
     {
+      "url": "https://github.com/jtraverso/pseudorandom-hypergraph-matchings.git",
+      "type": "git",
+      "subDir": null,
+      "scope": "",
+      "rev": "3957f3c0dbc34fd310cb5fecf7941fddc9ef6c8f",
+      "name": "egj_pseudorandom",
+      "manifestFile": "lake-manifest.json",
+      "inputRev": "3957f3c0dbc34fd310cb5fecf7941fddc9ef6c8f",
+      "inherited": false,
+      "configFile": "lakefile.toml"
+    },
+    {
       "url": "https://github.com/leanprover-community/mathlib4.git",
       "type": "git",
       "subDir": null,

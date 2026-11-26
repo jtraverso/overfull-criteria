@@ -193,4 +193,88 @@ theorem exists_perfect_matching_retaining_exceptional_core_edges
 
 end MatchingRetention
 
+
+section TrianglePacking
+
+universe uA uB uW
+
+variable {A B W : Type*}
+
+abbrev OrientedTripartiteEdge (A B W : Type*) :=
+  TripartiteVertex A B W × TripartiteVertex A B W
+
+/-- A triangle as three vertices of the associated hypergraph. Each
+vertex of that hypergraph represents one oriented graph edge. -/
+noncomputable def triangleEdges (t : A × B × W) : Finset (OrientedTripartiteEdge A B W) :=
+  {(.inl t.1,.inr (.inl t.2.1)),(.inr (.inl t.2.1),.inr (.inr t.2.2)),(.inr (.inr t.2.2),.inl t.1)}
+
+theorem triangleEdges_card (t : A × B × W) : (triangleEdges t).card = 3 := by
+  classical
+  simp [triangleEdges,Finset.card_insert_of_notMem]
+
+/-- Two distinct graph edges determine at most one tripartite triangle. -/
+theorem triangle_eq_of_two_edges {t u : A × B × W}
+    {e f : OrientedTripartiteEdge A B W} (hef : e ≠ f)
+    (he : e ∈ triangleEdges t) (hf : f ∈ triangleEdges t)
+    (he' : e ∈ triangleEdges u) (hf' : f ∈ triangleEdges u) : t = u := by
+  classical
+  rcases t with ⟨a,b,w⟩
+  rcases u with ⟨a',b',w'⟩
+  simp only [triangleEdges,mem_insert,mem_singleton] at he hf
+  rcases he with rfl | rfl | rfl <;>
+    rcases hf with rfl | rfl | rfl <;>
+    simp_all [triangleEdges]
+
+theorem triangleEdges_injective : Function.Injective (triangleEdges : A × B × W → _) := by
+  intro t u h
+  let e : OrientedTripartiteEdge A B W := (.inl t.1,.inr (.inl t.2.1))
+  let f : OrientedTripartiteEdge A B W := (.inr (.inl t.2.1),.inr (.inr t.2.2))
+  have hef : e ≠ f := by simp [e,f]
+  have he : e ∈ triangleEdges t := by simp [e,triangleEdges]
+  have hf : f ∈ triangleEdges t := by simp [f,triangleEdges]
+  exact triangle_eq_of_two_edges hef he hf (h ▸ he) (h ▸ hf)
+
+noncomputable def triangleHypergraph (T : Finset (A × B × W)) :
+    Finset (Finset (OrientedTripartiteEdge A B W)) :=
+  T.map ⟨triangleEdges,triangleEdges_injective⟩
+
+variable [Fintype A] [Fintype B] [Fintype W]
+
+noncomputable def supportedTriangles (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop) :
+    Finset (A × B × W) :=
+  univ.filter (fun t => E t.1 t.2.1 ∧ L t.1 t.2.2 ∧ R t.2.1 t.2.2)
+
+variable {V : Type*}
+
+def ArcBalanced (E : Finset (V × V)) : Prop :=
+  ∀ v, (E.filter (fun e => e.1 = v)).card = (E.filter (fun e => e.2 = v)).card
+
+noncomputable def incidentDegree (G : Finset (V × V)) (v : V) : ℕ :=
+  (G.filter (fun e => e.1 = v ∨ e.2 = v)).card
+
+noncomputable def coveredEdges (M : Finset (Finset (V × V))) : Finset (V × V) :=
+  M.biUnion id
+
+noncomputable def packingLeave (G : Finset (V × V)) (M : Finset (Finset (V × V))) :
+    Finset (V × V) :=
+  G \ coveredEdges M
+
+/-- Chen–Shan, Lemma 4.10. Under the density and balance hypotheses of
+Lemma 4.8, an edge-disjoint triangle packing leaves a locally balanced
+graph of maximum degree at most ζm. -/
+theorem exists_triangle_packing_with_small_balanced_leave (η ζ : ℝ)
+    (hη : 0 < η) (hηhalf : η < 1/2) (hζ : 0 < ζ) :
+    ∃ ε₀ : ℝ, ∃ m₀ : ℕ, 0 < ε₀ ∧ ∀ (m : ℕ), m₀ ≤ m →
+    ∀ (A : Type uA) (B : Type uB) (W : Type uW) [Fintype A] [Fintype B] [Fintype W]
+      (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop) (ε : ℝ),
+      0 ≤ ε → ε ≤ ε₀ → DenseTripartite E L R m η ε →
+      ∃ T ⊆ supportedTriangles E L R,
+        (↑(triangleHypergraph T) : Set (Finset (OrientedTripartiteEdge A B W))).PairwiseDisjoint id ∧
+        ArcBalanced (packingLeave (tripartiteArcs E L R) (triangleHypergraph T)) ∧
+        ∀ v, (incidentDegree (packingLeave (tripartiteArcs E L R) (triangleHypergraph T)) v : ℝ)
+          ≤ ζ * m := by
+  sorry
+
+end TrianglePacking
+
 end OverfullWork.ChenShan
