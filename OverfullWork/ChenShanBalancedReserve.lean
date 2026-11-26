@@ -23,7 +23,7 @@ noncomputable def reserveInDegree {A B : Type*} [Fintype A] (E : A → B → Pro
 noncomputable def reservePairSize {A B : Type*} [Fintype A] [Fintype B] (E : A → B → Prop) : ℝ :=
   ∑ a, reserveOutDegree E a
 
-private theorem sum_reserveInDegree {A B : Type*} [Fintype A] [Fintype B] (E : A → B → Prop) :
+theorem sum_reserveInDegree {A B : Type*} [Fintype A] [Fintype B] (E : A → B → Prop) :
     (∑ b, reserveInDegree E b) = reservePairSize E := by
   simp only [reserveInDegree,reservePairSize,reserveOutDegree,card_filter,Nat.cast_sum,Nat.cast_ite,
     Nat.cast_one,Nat.cast_zero]
