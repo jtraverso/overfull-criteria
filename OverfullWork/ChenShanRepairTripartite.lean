@@ -24,7 +24,7 @@ theorem repairPart_step (E : A → B → Prop) (L : A → W → Prop) (R : B →
   rcases a with a | (a | a) <;> rcases b with b | (b | b) <;>
     simp [tripartiteArc] at h' <;> simp only [repairPart] <;> decide
 
-private theorem card_repair_out (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop)
+theorem card_tripartite_outNeighbors (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop)
     (v : A ⊕ B ⊕ W) : (arcOutNeighbors (tripartiteArcs E L R) v).card =
       match v with
       | .inl a => (univ.filter (E a)).card
@@ -34,7 +34,7 @@ private theorem card_repair_out (E : A → B → Prop) (L : A → W → Prop) (R
     simp only [arcOutNeighbors,mem_tripartiteArcs,card_filter,Fintype.sum_sum_type,tripartiteArc,
       ite_false,sum_const_zero,zero_add,add_zero]
 
-private theorem card_repair_in (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop)
+theorem card_tripartite_inNeighbors (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop)
     (v : A ⊕ B ⊕ W) : (arcInNeighbors (tripartiteArcs E L R) v).card =
       match v with
       | .inl a => (univ.filter (L a)).card
@@ -122,13 +122,13 @@ theorem tripartite_repair_neighborhoods
     rw [h,card_map,card_univ]
   constructor
   · intro a
-    rw [card_repair_out]
+    rw [card_tripartite_outNeighbors]
     rcases a with a | (b | w)
     · simpa only [repairPart,h01,hClass1] using dense_repair_slack hq₁ hB (hAB a)
     · simpa only [repairPart,h12,hClass2] using nearly_complete_repair_slack hq₂ hW (hBW b)
     · simpa only [repairPart,h20,hClass0] using nearly_complete_repair_slack hq₂ hHalfA (hWA w)
   · intro b
-    rw [card_repair_in]
+    rw [card_tripartite_inNeighbors]
     rcases b with a | (b | w)
     · simpa only [repairPart,h02,hClass2] using nearly_complete_repair_slack hq₂ hW (hAW a)
     · simpa only [repairPart,h10,hClass0] using dense_repair_slack hq₁ hA (hBA b)

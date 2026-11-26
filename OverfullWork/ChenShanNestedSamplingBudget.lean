@@ -39,25 +39,26 @@ theorem exists_nested_sampling_budget (C a ε : ℝ)
 
 /-- Strict decrease before the cutoff lets us sum by distinct orders
 without grouping the nested levels into intervals. -/
-theorem exists_nested_core_with_sampling_budget (ρ C a ε : ℝ)
+theorem exists_nested_core_with_sampling_budget_above (ρ C a ε : ℝ) (hmin : ℕ)
     (hρ : 0 < ρ) (hρ₁ : ρ ≤ 1/2) (hC : 0 ≤ C) (ha : 0 < a) (hε : 0 < ε) :
-    ∃ h : ℕ, 4 ≤ h ∧ ∀ m ≥ h, ∃ l : ℕ,
+    ∃ h : ℕ, hmin ≤ h ∧ 4 ≤ h ∧ ∀ m ≥ h, ∃ l : ℕ,
       (∀ i ≤ l, h ≤ nestedCoreSize ρ m i) ∧
       nestedCoreSize ρ m (l+1) < h ∧ (nestedCoreSize ρ m l : ℝ) < h/ρ ∧
       (∑ i ∈ range (l+1),
         C*(nestedCoreSize ρ m i : ℝ)*exp (-a*nestedCoreSize ρ m i)) < ε := by
   classical
   obtain ⟨h₀,hh₀⟩ := exists_nested_sampling_budget C a ε hC ha hε
-  let h := max 4 h₀
-  refine ⟨h,le_max_left _ _,fun m hm => ?_⟩
+  let h := max (max 4 hmin) h₀
+  have h4 : 4 ≤ h := (le_max_left 4 hmin).trans (le_max_left _ _)
+  refine ⟨h,(le_max_right 4 hmin).trans (le_max_left _ _),h4,fun m hm => ?_⟩
   obtain ⟨l,hKeep,hExit,hTop⟩ :=
-    exists_last_nested_core_size ρ hρ hρ₁ m h (le_max_left _ _) hm
+    exists_last_nested_core_size ρ hρ hρ₁ m h h4 hm
   refine ⟨l,hKeep,hExit,hTop,?_⟩
   let s := nestedCoreSize ρ m
   have hs : Antitone s :=
     antitone_nat_of_succ_le (nestedCoreSize_monotone_down ρ (by linarith only [hρ₁]) m)
   have hlt (i j : ℕ) (hi : i ≤ l) (hij : i < j) : s j < s i := by
-    have h4 : 4 ≤ s i := (le_max_left 4 h₀).trans (hKeep i hi)
+    have h4 : 4 ≤ s i := h4.trans (hKeep i hi)
     have h4R : (4:ℝ) ≤ s i := by exact_mod_cast h4
     have hStep := nestedCoreSize_geometric ρ hρ.le hρ₁ m i h4
     change (s (i+1) : ℝ) ≤ (3/4)*s i at hStep
@@ -73,8 +74,19 @@ theorem exists_nested_core_with_sampling_budget (ρ C a ε : ℝ)
   have hSum := hh₀ ((range (l+1)).image s) (by
     intro n hn
     obtain ⟨i,hi,rfl⟩ := mem_image.mp hn
-    exact (le_max_right 4 h₀).trans (hKeep i (by have := mem_range.mp hi; omega)))
+    exact (le_max_right (max 4 hmin) h₀).trans (hKeep i (by have := mem_range.mp hi; omega)))
   rw [sum_image hInj] at hSum
   exact hSum
+
+theorem exists_nested_core_with_sampling_budget (ρ C a ε : ℝ)
+    (hρ : 0 < ρ) (hρ₁ : ρ ≤ 1/2) (hC : 0 ≤ C) (ha : 0 < a) (hε : 0 < ε) :
+    ∃ h : ℕ, 4 ≤ h ∧ ∀ m ≥ h, ∃ l : ℕ,
+      (∀ i ≤ l, h ≤ nestedCoreSize ρ m i) ∧
+      nestedCoreSize ρ m (l+1) < h ∧ (nestedCoreSize ρ m l : ℝ) < h/ρ ∧
+      (∑ i ∈ range (l+1),
+        C*(nestedCoreSize ρ m i : ℝ)*exp (-a*nestedCoreSize ρ m i)) < ε := by
+  obtain ⟨h,_,h4,hKeep⟩ :=
+    exists_nested_core_with_sampling_budget_above ρ C a ε 0 hρ hρ₁ hC ha hε
+  exact ⟨h,h4,hKeep⟩
 
 end OverfullWork.ChenShan
