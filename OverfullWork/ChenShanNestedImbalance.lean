@@ -62,7 +62,7 @@ private theorem abs_gap_of_sampled_degrees {x y p q d t : ℝ}
   exact abs_le.mpr ⟨by linarith only [hx'.1,hy'.2,hpq'.1],
     by linarith only [hx'.2,hy'.1,hpq'.2]⟩
 
-private theorem color_rounding_degree_gap {m k : ℕ} (hm : 0 < m) (hk : 0 < k)
+theorem color_rounding_degree_gap {m k : ℕ} (hm : 0 < m) (hk : 0 < k)
     (s : ℕ) {d : ℝ} (hd : 0 ≤ d) (hd₁ : d ≤ k) :
     |((nestedColorSize ((k:ℝ)/m) s : ℝ)/k)*d-((s:ℝ)/m)*d| ≤ 1/2 := by
   have hmR : (0:ℝ) < m := by exact_mod_cast hm
