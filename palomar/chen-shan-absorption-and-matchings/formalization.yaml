@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Absorption, signed edge weights, and matching retention"
+  description: "Lean formalizations of Lemmas 4.6, 4.7, and 5.22 of Chen and Shan."
+  authors: ["Juan Pablo Traverso Gianini"]
+  responsible_maintainers: ["Juan Pablo Traverso Gianini"]
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C35", "05C70", "68V20"]
+
+sources:
+  - title: "An Asymptotically Sharp Form of the Overfull Conjecture"
+    authors: ["Guantao Chen", "Songling Shan"]
+    id: "arXiv:2611.32763v1"
+    location: "Sections 4.3, 4.4, and 5.3.1. Lemmas 4.6, 4.7, and 5.22."
+    relationship: formalizes
+
+status:
+  scope: "Universal tripartite absorption, bounded signed edge weights, and exceptional–core matching retention."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-6"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4.35.0-rc3, Mathlib, Lake Comparator, and axiom audits."
+  spend_usd: "not tracked"
+  notes: "The Lean development and packaging were AI-assisted under human direction."
+
+fidelity:
+  divergences: "Lemma 4.6 orients each tripartite edge once and gives an explicit bound on the common side size. Lemma 4.7 uses the paper's cut inequalities and proves flow feasibility by minimizing squared residual demand and saturating the cut from vertices with positive residual. Lemma 5.22 uses induced complements and retains the paper's bound of 135720 discarded prescribed edges."
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "One challenge states all three results and imports only Mathlib."
+
+alignment:
+  namespace: "OverfullWork.ChenShan"
+  statements:
+    - source: "Lemma 4.6"
+      lean: "OverfullWork.ChenShan.exists_universal_tripartite_absorber"
+      module: "OverfullWork.ChenShanUniversalAbsorber"
+      status: "formalized"
+    - source: "Lemma 4.7"
+      lean: "OverfullWork.ChenShan.exists_bounded_signed_edge_weights"
+      module: "OverfullWork.ChenShanSignedEdgeWeights"
+      status: "formalized"
+    - source: "Lemma 5.22"
+      lean: "OverfullWork.ChenShan.exists_perfect_matching_retaining_exceptional_core_edges"
+      module: "OverfullWork.ChenShanMatchingRetention"
+      status: "formalized"
+
+acknowledgements: "Lean and Mathlib, and the authors of the mathematical source."

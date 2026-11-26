@@ -1,0 +1,22 @@
+{
+  "challenge_module": "ChenShanAbsorptionAndMatchingsChallenge",
+  "solution_module": "ChenShanAbsorptionAndMatchingsSolution",
+  "theorem_names": [
+    "OverfullWork.ChenShan.exists_universal_tripartite_absorber",
+    "OverfullWork.ChenShan.exists_bounded_signed_edge_weights",
+    "OverfullWork.ChenShan.exists_perfect_matching_retaining_exceptional_core_edges"
+  ],
+  "definition_names": [
+    "OverfullWork.ChenShan.TripartiteVertex",
+    "OverfullWork.ChenShan.tripartiteArc",
+    "OverfullWork.ChenShan.tripartiteArcs",
+    "OverfullWork.ChenShan.TripartiteLocallyBalanced",
+    "OverfullWork.ChenShan.FootprintEdge"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}
