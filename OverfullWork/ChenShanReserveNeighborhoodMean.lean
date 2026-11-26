@@ -83,4 +83,28 @@ theorem reserve_sample_neighborhood_ratio {μ ν x y D η : ℝ}
     (show x ≤ μ+D by linarith only [(abs_le.mp hCount).2]) hc
   linarith only [hx,hErr,hημ,hD',hMean,(abs_le.mp hGood).1]
 
+
+/-- A neighborhood count with a mean in the range required in (R2)
+satisfies the paper's bounds after an absolute error of μρn/4. -/
+theorem reserve_sample_neighborhood_size {μ ρ n expected actual : ℝ}
+    (hScale : 0 ≤ μ*ρ*n)
+    (hLower : μ*ρ*n/2 ≤ expected) (hUpper : expected ≤ 3*μ*ρ*n)
+    (hCount : |actual-expected| ≤ μ*ρ*n/4) :
+    μ*ρ*n/4 ≤ actual ∧ actual ≤ 4*μ*ρ*n :=
+  ⟨by linarith only [hLower,(abs_le.mp hCount).1],
+    by linarith only [hScale,hUpper,(abs_le.mp hCount).2]⟩
+
+/-- A count restricted to the next protected prefix has the upper bound
+in (R5) once its probabilities are bounded by 3μ. -/
+theorem reserve_sample_protected_prefix_count {I : Type*} [Fintype I]
+    (p : I → ℝ) (S : Finset I) (sample : I → Bool) {μ n ξ : ℝ}
+    (hP : ∀ e ∈ S, p e ≤ 3*μ)
+    (hSample : |count S sample-mean p S| ≤ ξ*n) :
+    count S sample ≤ 3*μ*(S.card : ℝ)+ξ*n := by
+  have hMean : mean p S ≤ 3*μ*(S.card : ℝ) := by
+    unfold mean
+    rw [mul_comm (3*μ), ← nsmul_eq_mul, ← sum_const]
+    exact sum_le_sum hP
+  linarith only [hMean,(abs_le.mp hSample).2]
+
 end OverfullWork.ChenShan
