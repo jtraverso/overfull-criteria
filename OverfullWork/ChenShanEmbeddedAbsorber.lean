@@ -8,6 +8,7 @@ public import OverfullWork.ChenShanTripartiteCycles
 namespace OverfullWork.ChenShan
 
 variable {A B W A' B' W' I : Type*}
+universe uV
 
 /-- The image of a relation under two injections. -/
 def imageEdge (f : A ↪ A') (g : B ↪ B') (E : A → B → Prop) (a : A') (b : B') : Prop :=
@@ -123,7 +124,7 @@ private def optionEmbedding (w : I ↪ W) (z : W)
     · exact congrArg some (w.injective hij)
 
 /-- The edge touches its own footprint and both endpoints are accounted for. -/
-def FootprintEdge {V : Type*} (Q Z : Finset V) (u v : V) : Prop :=
+def FootprintEdge {V : Type uV} (Q Z : Finset V) (u v : V) : Prop :=
   (u ∈ Q ∧ (v ∈ Q ∨ v ∈ Z)) ∨ (v ∈ Q ∧ (u ∈ Q ∨ u ∈ Z))
 
 theorem FootprintEdge.disjoint {V : Type*} {P Q Z : Finset V} {u v : V}

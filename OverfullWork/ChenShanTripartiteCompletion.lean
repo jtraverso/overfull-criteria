@@ -7,7 +7,9 @@ public import Mathlib.Data.Fintype.EquivFin
 
 namespace OverfullWork.ChenShan
 
-variable {A B W : Type*}
+universe uA uB uW
+
+variable {A : Type uA} {B : Type uB} {W : Type uW}
 
 /-- A residual coloring uses only available colors and uses each available
 color once at its endpoint. The latter condition is automatic for a

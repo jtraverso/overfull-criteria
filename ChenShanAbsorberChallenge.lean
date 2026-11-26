@@ -1,16 +1,54 @@
 module
 
-public import OverfullWork.ChenShanAbsorberCatalogue
-public import OverfullWork.ChenShanEmbeddedAbsorber
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Basic.Real.Basic
 
 @[expose] public section
 
 namespace OverfullWork.ChenShan
 
 open Finset
-open scoped Classical BigOperators
+open scoped Classical
 
-variable {A B W : Type*} [Fintype A] [Fintype B] [Fintype W]
+universe uA uB uW uV
+
+abbrev TripartiteVertex (A : Type uA) (B : Type uB) (W : Type uW) := A ⊕ (B ⊕ W)
+
+variable {A : Type uA} {B : Type uB} {W : Type uW}
+
+structure TripartiteTriangleDecomposition (E : A → B → Prop) (left : A → W → Prop)
+    (right : B → W → Prop) where
+  triangle : A → B → W → Prop
+  supported : ∀ a b w, triangle a b w → E a b ∧ left a w ∧ right b w
+  coversBase : ∀ a b, E a b → ∃! w, triangle a b w
+  coversLeft : ∀ a w, left a w → ∃! b, triangle a b w
+  coversRight : ∀ b w, right b w → ∃! a, triangle a b w
+
+def TripartiteLocallyBalanced [Fintype A] [Fintype B] [Fintype W]
+    (E : A → B → Prop) (left : A → W → Prop) (right : B → W → Prop) : Prop :=
+  (∀ a, Fintype.card {b // E a b} = Fintype.card {w // left a w}) ∧
+  (∀ b, Fintype.card {a // E a b} = Fintype.card {w // right b w}) ∧
+  ∀ w, Fintype.card {a // left a w} = Fintype.card {b // right b w}
+
+def tripartiteArc (E : A → B → Prop) (l : A → W → Prop) (r : B → W → Prop) :
+    A ⊕ (B ⊕ W) → A ⊕ (B ⊕ W) → Prop
+  | .inl a, .inr (.inl b) => E a b
+  | .inr (.inl b), .inr (.inr w) => r b w
+  | .inr (.inr w), .inl a => l a w
+  | _, _ => False
+
+noncomputable def tripartiteArcs [Fintype A] [Fintype B] [Fintype W]
+    (E : A → B → Prop) (l : A → W → Prop) (r : B → W → Prop) :
+    Finset ((A ⊕ (B ⊕ W)) × (A ⊕ (B ⊕ W))) :=
+  univ.filter (fun e => tripartiteArc E l r e.1 e.2)
+
+def FootprintEdge {V : Type uV} (Q Z : Finset V) (u v : V) : Prop :=
+  (u ∈ Q ∧ (v ∈ Q ∨ v ∈ Z)) ∨ (v ∈ Q ∧ (u ∈ Q ∨ u ∈ Z))
+
+variable [Fintype A] [Fintype B] [Fintype W]
 
 /-- The statement of Chen–Shan's universal tripartite absorber lemma. -/
 theorem exists_universal_tripartite_absorber

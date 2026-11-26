@@ -11,7 +11,9 @@ namespace OverfullWork.ChenShan
 open Finset
 open scoped Classical BigOperators
 
-variable {A B W : Type*}
+universe uA uB uW
+
+variable {A : Type uA} {B : Type uB} {W : Type uW}
 
 /-- Orient each edge around the three classes in the order A, B, W. -/
 def tripartiteArc (E : A → B → Prop) (l : A → W → Prop) (r : B → W → Prop) :

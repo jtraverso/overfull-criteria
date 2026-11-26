@@ -40,7 +40,7 @@ fidelity:
 review:
   status: "self-assessed"
   reviewers: []
-  notes: "The challenge declares the theorem without importing its proof module."
+  notes: "The challenge is self-contained over the external dependencies and declares the theorem independently of its proof module."
 
 alignment:
   namespace: "OverfullWork.ChenShan"

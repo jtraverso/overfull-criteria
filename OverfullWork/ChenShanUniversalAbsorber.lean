@@ -10,7 +10,9 @@ namespace OverfullWork.ChenShan
 open Finset
 open scoped Classical BigOperators
 
-variable {A B W : Type*} [Fintype A] [Fintype B] [Fintype W]
+universe uA uB uW
+
+variable {A : Type uA} {B : Type uB} {W : Type uW} [Fintype A] [Fintype B] [Fintype W]
 
 omit [Fintype A] [Fintype B] [Fintype W] in
 private theorem FootprintEdge.reverse {Q Z : Finset (TripartiteVertex A B W)} {u v}

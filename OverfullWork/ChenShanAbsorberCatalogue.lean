@@ -9,9 +9,11 @@ namespace OverfullWork.ChenShan
 open Finset
 open scoped Classical BigOperators
 
-variable {A B W : Type*}
+universe uA uB uW
 
-abbrev TripartiteVertex (A B W : Type*) := A ⊕ (B ⊕ W)
+variable {A : Type uA} {B : Type uB} {W : Type uW}
+
+abbrev TripartiteVertex (A : Type uA) (B : Type uB) (W : Type uW) := A ⊕ (B ⊕ W)
 abbrev TripartiteArcSet (A B W : Type*) := Finset (TripartiteVertex A B W × TripartiteVertex A B W)
 
 section
