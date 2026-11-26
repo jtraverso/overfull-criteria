@@ -71,3 +71,9 @@ name = "ChenShanAbsorptionAndMatchingsChallenge"
 
 [[lean_lib]]
 name = "ChenShanAbsorptionAndMatchingsSolution"
+
+[[lean_lib]]
+name = "ChenShanReserveChallenge"
+
+[[lean_lib]]
+name = "ChenShanReserveSolution"

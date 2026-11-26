@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Balanced reserves and disjoint matching packings"
+  description: "Lean formalizations of Lemmas 4.11, 4.12, 4.13, and 4.14 of Chen and Shan."
+  authors: ["Juan Pablo Traverso Gianini"]
+  responsible_maintainers: ["Juan Pablo Traverso Gianini"]
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C35", "05C70", "68V20"]
+
+sources:
+  - title: "An Asymptotically Sharp Form of the Overfull Conjecture"
+    authors: ["Guantao Chen", "Songling Shan"]
+    id: "arXiv:2611.32763v1"
+    location: "Section 4.5. Lemmas 4.11–4.14."
+    relationship: formalizes
+  - title: "Clique decompositions of multipartite graphs and completion of Latin squares"
+    authors: ["Ben Barber", "Daniela Kühn", "Allan Lo", "Deryk Osthus", "Amelia Taylor"]
+    id: "arXiv:1603.01043"
+    location: "Lemma 9.1 for r = 3."
+    relationship: adapts
+
+status:
+  scope: "Rectangular signed weights, balanced reserve probabilities, short-path imbalance repair, and pairwise edge-disjoint bipartite perfect matchings."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-6"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4.35.0-rc3, Mathlib, Lake Comparator, and axiom audits."
+  spend_usd: "not tracked"
+  notes: "The Lean development and packaging were AI-assisted under human direction."
+
+fidelity:
+  divergences: "Lemma 4.11 obtains the stronger bound 2θ/(2c−1) by applying Lemma 4.7 to two shores of equal size and averaging over vertex copies. Lemma 4.12 uses the explicit constant 8/(2c−1) and also admits several cycles of classes. Lemma 4.13 supplies the explicit bound 5√ξ n. Lemma 4.14 uses conditional expectation to control all vertex loads and retains the paper's degree margin and intersection bounds."
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "The challenge imports Mathlib and states all four results."
+
+alignment:
+  namespace: "OverfullWork.ChenShan"
+  statements:
+    - source: "Lemma 4.11"
+      lean: "OverfullWork.ChenShan.exists_bounded_rectangular_signed_edge_weights"
+      module: "OverfullWork.ChenShanRectangularSignedWeights"
+      status: "formalized"
+    - source: "Lemma 4.12"
+      lean: "OverfullWork.ChenShan.exists_balanced_reserve_probabilities"
+      module: "OverfullWork.ChenShanBalancedReserve"
+      status: "formalized"
+    - source: "Lemma 4.13"
+      lean: "OverfullWork.ChenShan.exists_tripartite_balancing_deletion"
+      module: "OverfullWork.ChenShanLemma413"
+      status: "formalized"
+    - source: "Lemma 4.14"
+      lean: "OverfullWork.ChenShan.exists_bklot_bipartite_matching_packing"
+      module: "OverfullWork.ChenShanLemma414"
+      status: "formalized"
+
+acknowledgements: "Lean and Mathlib, and the authors of the mathematical sources."
