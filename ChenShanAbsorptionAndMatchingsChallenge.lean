@@ -110,6 +110,64 @@ theorem exists_bounded_signed_edge_weights
 
 end SignedWeights
 
+section FractionalDecomposition
+
+open scoped BigOperators
+
+universe uA uB uW
+
+variable {A : Type uA} {B : Type uB} {W : Type uW}
+
+structure TripartiteEdgeWeights (A : Type uA) (B : Type uB) (W : Type uW) where
+  ab : A → B → ℝ
+  aw : A → W → ℝ
+  bw : B → W → ℝ
+
+def TriangleSupported (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop)
+    (p : A → B → W → ℝ) : Prop :=
+  ∀ a b w, ¬ (E a b ∧ L a w ∧ R b w) → p a b w = 0
+
+def triangleBoundary [Fintype A] [Fintype B] [Fintype W]
+    (p : A → B → W → ℝ) : TripartiteEdgeWeights A B W :=
+  ⟨fun a b => ∑ w, p a b w, fun a w => ∑ b, p a b w, fun b w => ∑ a, p a b w⟩
+
+structure DenseTripartite [Fintype A] [Fintype B] [Fintype W]
+    (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop)
+    (m : ℕ) (η ε : ℝ) : Prop where
+  sizeA : Fintype.card A = m
+  sizeB : Fintype.card B = m
+  balanced : TripartiteLocallyBalanced E L R
+  degreeA : ∀ a, (1/2 + η) * m ≤ (#(univ.filter (E a)) : ℝ)
+  degreeB : ∀ b, (1/2 + η) * m ≤ (#(univ.filter (fun a => E a b)) : ℝ)
+  missingAW : ∀ a, (#(univ.filter (fun w => ¬ L a w)) : ℝ) ≤ ε * m
+  missingBW : ∀ b, (#(univ.filter (fun w => ¬ R b w)) : ℝ) ≤ ε * m
+  missingWA : ∀ w, (#(univ.filter (fun a => ¬ L a w)) : ℝ) ≤ ε * m
+  missingWB : ∀ w, (#(univ.filter (fun b => ¬ R b w)) : ℝ) ≤ ε * m
+
+noncomputable def edgeOnes (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop) :
+    TripartiteEdgeWeights A B W :=
+  ⟨fun a b => if E a b then 1 else 0, fun a w => if L a w then 1 else 0,
+   fun b w => if R b w then 1 else 0⟩
+
+variable [Fintype A] [Fintype B] [Fintype W]
+
+variable {E : A → B → Prop} {L : A → W → Prop} {R : B → W → Prop}
+
+def BoundedFractionalTriangleDecomposition (E : A → B → Prop)
+    (L : A → W → Prop) (R : B → W → Prop) : Prop :=
+  ∃ ω : A → B → W → ℝ, TriangleSupported E L R ω ∧
+    triangleBoundary ω = edgeOnes E L R ∧
+    ∀ a b w, E a b → L a w → R b w →
+      1/(2*(Fintype.card W : ℝ)) ≤ ω a b w ∧ ω a b w ≤ 3/(2*(Fintype.card W : ℝ))
+
+theorem exists_bounded_fractional_triangle_decomposition (η : ℝ)
+    (hη : 0 < η) (hηhalf : η < 1/2) :
+    ∃ ε₀ > 0, ∀ (m : ℕ) (ε : ℝ), 0 ≤ ε → ε ≤ ε₀ →
+      DenseTripartite E L R m η ε → BoundedFractionalTriangleDecomposition E L R := by
+  sorry
+
+end FractionalDecomposition
+
 section MatchingRetention
 
 open SimpleGraph

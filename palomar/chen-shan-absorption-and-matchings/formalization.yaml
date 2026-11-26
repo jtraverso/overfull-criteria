@@ -3,7 +3,7 @@ version: "v0.4"
 
 project:
   name: "Absorption, signed edge weights, and matching retention"
-  description: "Lean formalizations of Lemmas 4.6, 4.7, and 5.22 of Chen and Shan."
+  description: "Lean formalizations of Lemmas 4.6, 4.7, 4.8, and 5.22 of Chen and Shan."
   authors: ["Juan Pablo Traverso Gianini"]
   responsible_maintainers: ["Juan Pablo Traverso Gianini"]
   license: "Apache-2.0"
@@ -16,11 +16,11 @@ sources:
   - title: "An Asymptotically Sharp Form of the Overfull Conjecture"
     authors: ["Guantao Chen", "Songling Shan"]
     id: "arXiv:2611.32763v1"
-    location: "Sections 4.3, 4.4, and 5.3.1. Lemmas 4.6, 4.7, and 5.22."
+    location: "Sections 4.3, 4.4, and 5.3.1. Lemmas 4.6, 4.7, 4.8, and 5.22."
     relationship: formalizes
 
 status:
-  scope: "Universal tripartite absorption, bounded signed edge weights, and exceptional–core matching retention."
+  scope: "Universal tripartite absorption, bounded signed edge weights, fractional triangle decomposition, and exceptional–core matching retention."
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -35,12 +35,12 @@ automation:
   notes: "The Lean development and packaging were AI-assisted under human direction."
 
 fidelity:
-  divergences: "Lemma 4.6 orients each tripartite edge once and gives an explicit bound on the common side size. Lemma 4.7 uses the paper's cut inequalities and proves flow feasibility by minimizing squared residual demand and saturating the cut from vertices with positive residual. Lemma 5.22 uses induced complements and retains the paper's bound of 135720 discarded prescribed edges."
+  divergences: "Lemma 4.6 orients each tripartite edge once and gives an explicit bound on the common side size. Lemma 4.7 uses the paper's cut inequalities and proves flow feasibility by minimizing squared residual demand and saturating the cut from vertices with positive residual. Lemma 4.8 records the explicit threshold and uses a convergent geometric series of corrections. Lemma 5.22 uses induced complements and retains the paper's bound of 135720 discarded prescribed edges."
 
 review:
   status: "self-assessed"
   reviewers: []
-  notes: "One challenge states all three results and imports only Mathlib."
+  notes: "One challenge states all four results and imports only Mathlib."
 
 alignment:
   namespace: "OverfullWork.ChenShan"
@@ -52,6 +52,10 @@ alignment:
     - source: "Lemma 4.7"
       lean: "OverfullWork.ChenShan.exists_bounded_signed_edge_weights"
       module: "OverfullWork.ChenShanSignedEdgeWeights"
+      status: "formalized"
+    - source: "Lemma 4.8"
+      lean: "OverfullWork.ChenShan.exists_bounded_fractional_triangle_decomposition"
+      module: "OverfullWork.ChenShanFractionalDecomposition"
       status: "formalized"
     - source: "Lemma 5.22"
       lean: "OverfullWork.ChenShan.exists_perfect_matching_retaining_exceptional_core_edges"
