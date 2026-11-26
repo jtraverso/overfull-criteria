@@ -127,7 +127,7 @@ theorem crossing_cycle_degree_errors
     exact (wb v.1 (mem_sdiff.mp v.2).1).1.trans (by linarith only [hBudget])
 
 
-private noncomputable def crossingSizeCenter (ρ : ℝ) (m k i : ℕ) (j : Fin 6) : ℝ :=
+noncomputable def crossingSizeCenter (ρ : ℝ) (m k i : ℕ) (j : Fin 6) : ℝ :=
   let n : ℝ := nestedCoreSize ρ m i
   let s : ℝ := nestedCoreSize ρ m (i+1)
   let p : ℝ := (k:ℝ)/m
@@ -139,7 +139,7 @@ private theorem crossing_core_difference {X : Type*} (U T : Finset X) (h : T ⊆
     exact_mod_cast card_sdiff_add_card_eq_card h
   linarith only [he]
 
-private theorem crossingSizeErrors (S : NestedTripartitePrefixes A B W ρ m k l) (i : ℕ)
+theorem crossingSizeErrors (S : NestedTripartitePrefixes A B W ρ m k l) (i : ℕ)
     (hi : i+1 ≤ l) :
     ∀ j, |(Fintype.card (CrossingPart S i j) : ℝ)-crossingSizeCenter ρ m k i j| ≤ 1 := by
   obtain ⟨hInner,hOuter⟩ := S.crossing_color_sizes hi
