@@ -96,6 +96,13 @@ open SimpleGraph Finset KLOS PrunedCore
 def auxiliaryOrder (n k : ℕ) : ℕ :=
   max n (k + 1) + if (max n (k + 1)) % 2 = n % 2 then 0 else 1
 
+/-- Chen–Shan, Lemma 3.23. Fix positive δ and τ. There are ν > 0 and a
+size threshold such that a prescribed degree sequence on n labeled vertices
+is realized by a simple robust (ν, τ)-expander whenever every degree is
+between δn and n − 1, any two degrees differ by at most one, and the degree
+sum is even. Robust expansion means that each set S of size between τn
+and (1 − τ)n has at least |S| + νn vertices with at least νn neighbors
+in S. The article takes δ < 1 and τ < 1/2. -/
 theorem exists_robust_graph_with_prescribed_degrees
     (δ τ : ℝ) (hδ : 0 < δ) (hτ : 0 < τ) :
     ∃ ν : ℝ, 0 < ν ∧ ∃ N : ℕ, ∀ {V : Type*} [Fintype V] [DecidableEq V],
@@ -109,6 +116,18 @@ theorem exists_robust_graph_with_prescribed_degrees
   sorry
 
 open scoped Classical in
+/-- Chen–Shan, Lemma 3.24. Fix 0 < α < 1 and 0 < τ < α/24.
+For sufficiently large n, let L be a loopless multigraph on n vertices
+with maximum degree at most k, where αn ≤ k ≤ 2n. Assume no set S
+induces more than k floor(|S|/2) edges counted with multiplicity. Also
+assume the total deficit s = ∑ᵥ (k − deg_L(v)) is at most εn² for
+the positive ε supplied by the lemma. Take the least m ≥ max(n, k + 1)
+of the same parity as n. The completion is k-regular, has even order
+n + m, and contains L as the graph induced on the original vertices.
+All edges added across the cut or among the m auxiliary vertices are
+simple. The completion still has no k-overfull set. Its auxiliary
+vertices induce a simple robust (ν, τ)-expander of minimum degree at
+least k − ceil(s/m). -/
 theorem exists_regular_auxiliary_completion
     (α τ : ℝ) (hα : 0 < α) (hαOne : α < 1) (hτ : 0 < τ) (hRange : τ < α / 24) :
     ∃ ν ε : ℝ, 0 < ν ∧ 0 < ε ∧ ∃ N : ℕ,
@@ -129,6 +148,13 @@ theorem exists_regular_auxiliary_completion
   sorry
 
 open scoped Classical in
+/-- Simple-graph specialization following Chen–Shan, Lemma 3.24. If L
+is simple and k < n, the least permissible auxiliary order is n. The
+same hypotheses on α, τ, the maximum degree, the total deficit, and
+the absence of a k-overfull set therefore give a simple k-regular
+completion of order 2n. The original vertices induce L. The auxiliary
+vertices induce a simple robust (ν, τ)-expander of minimum degree at
+least k − ceil(s/n), and the completion has no k-overfull set. -/
 theorem exists_simple_auxiliary_completion
     (α τ : ℝ) (hα : 0 < α) (hαOne : α < 1) (hτ : 0 < τ) (hRange : τ < α / 24) :
     ∃ ν ε : ℝ, 0 < ν ∧ 0 < ε ∧ ∃ N : ℕ,

@@ -12,6 +12,9 @@ project:
     (1 + epsilon) times half the order, for every fixed positive epsilon.
     The proof includes the reduction to critical graphs, the two stopping
     routes, and the coloring of the canonical completion.
+    The repository also contains a separate formalization of Chen and Shan’s
+    robust prescribed-degree realization and regular auxiliary completion
+    for multigraphs and simple graphs.
   authors:
     - "Juan Pablo Traverso Gianini"
   responsible_maintainers:

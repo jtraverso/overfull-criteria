@@ -20,6 +20,22 @@ apply 1.3 after extracting a critical subgraph with the same maximum degree.
 The [formalization metadata](formalization.yaml) records the quantitative and
 existential forms of supporting results used in the proofs.
 
+## Chen–Shan auxiliary completion
+
+The auxiliary package formalizes Lemmas 3.23 and 3.24 of Guantao Chen and
+Songling Shan, *An Asymptotically Sharp Form of the Overfull Conjecture*,
+including the simple-graph specialization after Lemma 3.24. A dense integer
+degree sequence with even sum and spread at most one has a labeled simple
+robust expander realization. A loopless multigraph of small total deficit
+with no overfull set at the target degree extends to an even-order regular
+multigraph preserving the original induced graph. The new vertices induce
+a simple robust expander. For a simple input with target degree less than
+the input order, the completion is simple and has twice that order.
+
+The [challenge statements](ChenShanAuxiliaryChallenge.lean) give the exact
+hypotheses. The package uses [its own formalization metadata](palomar/chen-shan-auxiliary/formalization.yaml)
+and [comparator configuration](comparator.chen-shan-auxiliary.json).
+
 ## Verify
 
 Use the Lean version in `lean-toolchain`.
