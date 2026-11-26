@@ -68,15 +68,15 @@ theorem exists_lift_to_crossing_arc_slots
   exact ⟨⟨g,fun x y he => f.injective ((hg x).symm.trans ((congrArg e he).trans (hg y)))⟩,hg⟩
 
 
-private theorem mem_vertices_left (S : NestedTripartitePrefixes A B W ρ m k l)
+theorem mem_vertices_left (S : NestedTripartitePrefixes A B W ρ m k l)
     (i : ℕ) (a : A) : Sum.inl a ∈ S.vertices i ↔ a ∈ S.left i := by
   simp [NestedTripartitePrefixes.vertices,mem_map]
 
-private theorem mem_vertices_right (S : NestedTripartitePrefixes A B W ρ m k l)
+theorem mem_vertices_right (S : NestedTripartitePrefixes A B W ρ m k l)
     (i : ℕ) (b : B) : Sum.inr (Sum.inl b) ∈ S.vertices i ↔ b ∈ S.right i := by
   simp [NestedTripartitePrefixes.vertices,mem_map]
 
-private theorem mem_vertices_color (S : NestedTripartitePrefixes A B W ρ m k l)
+theorem mem_vertices_color (S : NestedTripartitePrefixes A B W ρ m k l)
     (i : ℕ) (w : W) : Sum.inr (Sum.inr w) ∈ S.vertices i ↔ w ∈ S.colors i := by
   simp [NestedTripartitePrefixes.vertices,mem_map]
 
