@@ -89,6 +89,8 @@ end MultiGraph
 end SimpleGraph
 
 namespace OverfullWork.ChenShan
+
+universe u
 open SimpleGraph Finset KLOS PrunedCore
 
 def auxiliaryOrder (n k : ℕ) : ℕ :=
@@ -110,7 +112,7 @@ open scoped Classical in
 theorem exists_regular_auxiliary_completion
     (α τ : ℝ) (hα : 0 < α) (hαOne : α < 1) (hτ : 0 < τ) (hRange : τ < α / 24) :
     ∃ ν ε : ℝ, 0 < ν ∧ 0 < ε ∧ ∃ N : ℕ,
-      ∀ {U : Type*} [Fintype U] [DecidableEq U] (L : MultiGraph U) (k : ℕ),
+      ∀ {U : Type u} [Fintype U] [DecidableEq U] (L : MultiGraph U) (k : ℕ),
       let n := Fintype.card U
       N ≤ n → α * (n : ℝ) ≤ (k : ℝ) → k ≤ 2 * n →
       (∀ u, L.degree u ≤ k) → ¬ L.HasOverfullSubset k →
@@ -130,7 +132,7 @@ open scoped Classical in
 theorem exists_simple_auxiliary_completion
     (α τ : ℝ) (hα : 0 < α) (hαOne : α < 1) (hτ : 0 < τ) (hRange : τ < α / 24) :
     ∃ ν ε : ℝ, 0 < ν ∧ 0 < ε ∧ ∃ N : ℕ,
-      ∀ {U : Type*} [Fintype U] [DecidableEq U] (L : SimpleGraph U) [DecidableRel L.Adj] (k : ℕ),
+      ∀ {U : Type u} [Fintype U] [DecidableEq U] (L : SimpleGraph U) [DecidableRel L.Adj] (k : ℕ),
       let n := Fintype.card U
       N ≤ n → α * (n : ℝ) ≤ (k : ℝ) → k < n →
       (∀ u, L.degree u ≤ k) → ¬ (MultiGraph.ofSimpleGraph L).HasOverfullSubset k →
