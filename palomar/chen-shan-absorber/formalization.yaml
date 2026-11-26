@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Universal tripartite absorbers for locally balanced remainders"
+  description: "Lean formalization of Chen and Shan's Lemma 4.6, including the cycle partition, the placed copies of the cycle absorber, and the combined edge and vertex budget."
+  authors: ["Juan Pablo Traverso Gianini"]
+  responsible_maintainers: ["Juan Pablo Traverso Gianini"]
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C38", "05C70", "68V20"]
+
+sources:
+  - title: "An Asymptotically Sharp Form of the Overfull Conjecture"
+    authors: ["Guantao Chen", "Songling Shan"]
+    id: "arXiv:2611.32763v1"
+    location: "Section 4.3, Lemma 4.6."
+    relationship: formalizes
+
+status:
+  scope: "Lemma 4.6. The development includes the cycle absorber of Lemma 4.5 and uses the same disjoint-copy construction as the article."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-6"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4.35.0-rc3, Mathlib, Lake Comparator, and axiom audits."
+  spend_usd: "not tracked"
+  notes: "The Lean development and packaging were AI-assisted under human direction."
+
+fidelity:
+  divergences: "Each undirected tripartite edge is oriented once. The size threshold on m is made explicit. The proof needs only the stated degree bounds on the two base parts and the cardinality of A. The epsilon constraint is expressed using multiplication and includes h = 0. The auxiliary set Q is disjoint from Z and every absorber edge has one endpoint in Q and both endpoints in U or Q."
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "The challenge declares the theorem without importing its proof module."
+
+alignment:
+  namespace: "OverfullWork.ChenShan"
+  statements:
+    - source: "Lemma 4.6"
+      lean: "OverfullWork.ChenShan.exists_universal_tripartite_absorber"
+      module: "OverfullWork.ChenShanUniversalAbsorber"
+      status: "formalized"
+
+acknowledgements: "Lean and Mathlib, and the authors of the mathematical source."

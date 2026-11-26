@@ -1,0 +1,20 @@
+{
+  "challenge_module": "ChenShanAbsorberChallenge",
+  "solution_module": "ChenShanAbsorberSolution",
+  "theorem_names": [
+    "OverfullWork.ChenShan.exists_universal_tripartite_absorber"
+  ],
+  "definition_names": [
+    "OverfullWork.ChenShan.TripartiteVertex",
+    "OverfullWork.ChenShan.tripartiteArc",
+    "OverfullWork.ChenShan.tripartiteArcs",
+    "OverfullWork.ChenShan.TripartiteLocallyBalanced",
+    "OverfullWork.ChenShan.FootprintEdge"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}
