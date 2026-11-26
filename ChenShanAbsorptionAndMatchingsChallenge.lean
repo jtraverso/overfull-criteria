@@ -194,9 +194,7 @@ theorem exists_perfect_matching_retaining_exceptional_core_edges
 end MatchingRetention
 
 
-section TrianglePacking
-
-universe uA uB uW
+section TriangleHypergraph
 
 variable {A B W : Type*}
 
@@ -244,6 +242,10 @@ noncomputable def supportedTriangles (E : A → B → Prop) (L : A → W → Pro
     Finset (A × B × W) :=
   univ.filter (fun t => E t.1 t.2.1 ∧ L t.1 t.2.2 ∧ R t.2.1 t.2.2)
 
+end TriangleHypergraph
+
+section PackingLeave
+
 variable {V : Type*}
 
 def ArcBalanced (E : Finset (V × V)) : Prop :=
@@ -258,6 +260,12 @@ noncomputable def coveredEdges (M : Finset (Finset (V × V))) : Finset (V × V) 
 noncomputable def packingLeave (G : Finset (V × V)) (M : Finset (Finset (V × V))) :
     Finset (V × V) :=
   G \ coveredEdges M
+
+end PackingLeave
+
+section TrianglePacking
+
+universe uA uB uW
 
 /-- Chen–Shan, Lemma 4.10. Under the density and balance hypotheses of
 Lemma 4.8, an edge-disjoint triangle packing leaves a locally balanced
