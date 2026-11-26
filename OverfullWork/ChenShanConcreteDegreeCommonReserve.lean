@@ -15,18 +15,24 @@ variable {A B W : Type u} [Fintype A] [Fintype B] [Fintype W]
 variable {ρ : ℝ} {m k l : ℕ}
 
 /-- A single sample on Chen–Shan's actual six crossing pairs meets
-the degree tests (R1) and every common-neighbor test (R3). The constants
+the degree tests (R1), every common-neighbor test (R3), and further
+counts on these same arcs. The constants
 come from the per-test estimates and the quadratic count of outer pairs. -/
-theorem exists_crossing_reserve_degree_and_common_sample
+theorem exists_crossing_reserve_with_extra_counts
+    {H : Type*} [Fintype H]
     (S : NestedTripartitePrefixes A B W ρ m k l) (i : ℕ)
     (F : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
     (p : (j : Fin 6) → CrossingPart S i j → CrossingPart S i (crossingNext j) → ℝ)
-    {μ ξ δ : ℝ} (hμ : 0 < μ) (hξ : 0 < ξ) (hρ : 0 < ρ) (hρsmall : ρ ≤ 1/4)
+    (Extra : H → Finset (CyclicEdgeSlot (V := CrossingPart S i) crossingNext))
+    {μ ξ δ C : ℝ} (hμ : 0 < μ) (hξ : 0 < ξ) (hρ : 0 < ρ) (hρsmall : ρ ≤ 1/4)
     (hi : i+1 ≤ l) (hm : 0 < m) (hK : (k:ℝ)/m ≤ 3/2) (hHalf : 1/2 ≤ (k:ℝ)/m)
     (hn : 2 ≤ (nestedCoreSize ρ m i : ℝ)) (hInit : 1 ≤ ρ*(nestedCoreSize ρ m i : ℝ))
     (hδ : 0 ≤ δ) (hSmall : 18*δ ≤ ρ) (hRound : 1/2 ≤ δ*nestedCoreSize ρ m i)
     (hBounds : TripartiteResidualPrefixBounds F P Q S i (δ*nestedCoreSize ρ m i))
-    (hLarge : 2160/(min ((min (ξ/2) μ)^2/(16*μ)) (μ^2*ρ/204800))^3 < (nestedCoreSize ρ m i : ℝ))
+    (hExtra : ∀ j, mean (fun e : CyclicEdgeSlot (V := CrossingPart S i) crossingNext =>
+      p e.1 e.2.1 e.2.2) (Extra j) ≤ 4*μ*nestedCoreSize ρ m i)
+    (hExtraCount : (Fintype.card H : ℝ) ≤ C*(nestedCoreSize ρ m i : ℝ)^2)
+    (hLarge : (54*(40+C))/(min ((min (ξ/2) μ)^2/(16*μ)) (μ^2*ρ/204800))^3 < (nestedCoreSize ρ m i : ℝ))
     (hZero : ∀ j a b, ¬crossingArc S i F P Q j (crossingNext j) a b → p j a b=0)
     (hp : ∀ j a b, crossingArc S i F P Q j (crossingNext j) a b →
       p j a b ∈ Set.Ioo (0:ℝ) 1 ∧ μ/2 ≤ p j a b ∧ p j a b ≤ 2*μ)
@@ -37,9 +43,12 @@ theorem exists_crossing_reserve_degree_and_common_sample
     ∃ sample : CyclicEdgeSlot (V := CrossingPart S i) crossingNext → Bool,
       (∀ v, let R := sampledCrossingArcs S i F P Q sample
         |(arcDivergence R v : ℝ)| ≤ ξ*n ∧ (incidentDegree R v : ℝ) ≤ 10*μ*n) ∧
-      ∀ x ∈ X, ∀ y ∈ X, x ≠ y →
+      (∀ x ∈ X, ∀ y ∈ X, x ≠ y →
         let c : ℝ := (sampledCrossingCommonNeighbors S i F P Q sample x y).card
-        c ≤ 50*μ^2*ρ*n ∧ (tripartiteAdjacent F P Q x y → μ^2*ρ*n/20 ≤ c) := by
+        c ≤ 50*μ^2*ρ*n ∧ (tripartiteAdjacent F P Q x y → μ^2*ρ*n/20 ≤ c)) ∧
+      ∀ j, |count (Extra j) sample-
+        mean (fun e : CyclicEdgeSlot (V := CrossingPart S i) crossingNext => p e.1 e.2.1 e.2.2)
+          (Extra j)| ≤ min (ξ*n/2) (μ*n) := by
   dsimp only
   let E := fun j => crossingArc S i F P Q j (crossingNext j)
   let n : ℝ := nestedCoreSize ρ m i
@@ -92,11 +101,11 @@ theorem exists_crossing_reserve_degree_and_common_sample
       (crossing_outer_pair_test_budget S i (by omega) hm hK' (by
         have hh : (1:ℝ) ≤ nestedCoreSize ρ m i := by linarith only [hn]
         exact_mod_cast hh))
-  have hTests : 2*(Fintype.card V : ℝ)+Fintype.card J ≤ 40*n^2 := by
+  have hTests : (2*(Fintype.card V : ℝ)+Fintype.card H)+Fintype.card J ≤ (40+C)*n^2 := by
     have hSq : n ≤ n^2 := by
       have hh := mul_le_mul_of_nonneg_right (show 1 ≤ n by linarith only [hn]) hn₀.le
       nlinarith only [hh]
-    linarith only [hV,hJ,hSq]
+    linarith only [hV,hJ,hSq,hExtraCount]
   have hPall (j : Fin 6) a b : p j a b ∈ Set.Icc (0:ℝ) 1 ∧ p j a b ≤ 2*μ := by
     by_cases h : E j a b
     · exact ⟨⟨(hp _ _ _ h).1.1.le,(hp _ _ _ h).1.2.le⟩,(hp _ _ _ h).2.2⟩
@@ -116,11 +125,10 @@ theorem exists_crossing_reserve_degree_and_common_sample
         by simp [nsmul_eq_mul]
       _ ≤ (2*n)*(2*μ) := mul_le_mul_of_nonneg_right (hUpper _) (by positivity)
       _ = _ := by ring
-  obtain ⟨sample,hDegree,hPairs⟩ := exists_reserve_with_degree_and_common_neighbor_tests
+  obtain ⟨sample,hDegree,hPairs,hCounts⟩ := exists_reserve_with_additional_counts
     prob (fun e => (hPall e.1 e.2.1 e.2.2).1.1) (fun e => (hPall e.1 e.2.1 e.2.2).1.2)
-    In Out (fun j => (univ : Finset ↥(Z j))) f hμ hρ hξ hn₀ hBal hBound hLocal hCard hTests
-    (by norm_num only [show (54:ℝ)*40=2160 by norm_num]; exact hLarge)
-  refine ⟨sample,?_,?_⟩
+    In Out (fun j => (univ : Finset ↥(Z j))) f Extra hμ hρ hξ hn₀ hBal hBound hExtra hLocal hCard hTests hLarge
+  refine ⟨sample,?_,?_,hCounts⟩
   · exact sampledCrossingArc_degree_control S i F P Q sample (ξ*n) (10*μ*n)
       (mul_nonneg hξ.le hn₀.le) (by positivity) (fun j a => hDegree ⟨j,a⟩)
   · intro x hx y hy hxy
@@ -134,6 +142,40 @@ theorem exists_crossing_reserve_degree_and_common_sample
     exact adjacent_crossing_common_candidate_card S i F P Q hBounds hi hHalf hs₀ hδ hSmall hRound
       (mem_sdiff.mp hx).1 (mem_sdiff.mp hy).1 hAdj
 
+
+/-- A single sample on Chen–Shan's actual six crossing pairs meets
+the degree tests (R1) and every common-neighbor test (R3). The constants
+come from the per-test estimates and the quadratic count of outer pairs. -/
+theorem exists_crossing_reserve_degree_and_common_sample
+    (S : NestedTripartitePrefixes A B W ρ m k l) (i : ℕ)
+    (F : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
+    (p : (j : Fin 6) → CrossingPart S i j → CrossingPart S i (crossingNext j) → ℝ)
+    {μ ξ δ : ℝ} (hμ : 0 < μ) (hξ : 0 < ξ) (hρ : 0 < ρ) (hρsmall : ρ ≤ 1/4)
+    (hi : i+1 ≤ l) (hm : 0 < m) (hK : (k:ℝ)/m ≤ 3/2) (hHalf : 1/2 ≤ (k:ℝ)/m)
+    (hn : 2 ≤ (nestedCoreSize ρ m i : ℝ)) (hInit : 1 ≤ ρ*(nestedCoreSize ρ m i : ℝ))
+    (hδ : 0 ≤ δ) (hSmall : 18*δ ≤ ρ) (hRound : 1/2 ≤ δ*nestedCoreSize ρ m i)
+    (hBounds : TripartiteResidualPrefixBounds F P Q S i (δ*nestedCoreSize ρ m i))
+    (hLarge : 2160/(min ((min (ξ/2) μ)^2/(16*μ)) (μ^2*ρ/204800))^3 < (nestedCoreSize ρ m i : ℝ))
+    (hZero : ∀ j a b, ¬crossingArc S i F P Q j (crossingNext j) a b → p j a b=0)
+    (hp : ∀ j a b, crossingArc S i F P Q j (crossingNext j) a b →
+      p j a b ∈ Set.Ioo (0:ℝ) 1 ∧ μ/2 ≤ p j a b ∧ p j a b ≤ 2*μ)
+    (hMean : ∀ j (a : CrossingPart S i (crossingNext j)),
+      (∑ b, p (crossingNext j) a b) = ∑ b, p j b a) :
+    let n : ℝ := nestedCoreSize ρ m i
+    let X := S.vertices i \ S.vertices (i+1)
+    ∃ sample : CyclicEdgeSlot (V := CrossingPart S i) crossingNext → Bool,
+      (∀ v, let R := sampledCrossingArcs S i F P Q sample
+        |(arcDivergence R v : ℝ)| ≤ ξ*n ∧ (incidentDegree R v : ℝ) ≤ 10*μ*n) ∧
+      ∀ x ∈ X, ∀ y ∈ X, x ≠ y →
+        let c : ℝ := (sampledCrossingCommonNeighbors S i F P Q sample x y).card
+        c ≤ 50*μ^2*ρ*n ∧ (tripartiteAdjacent F P Q x y → μ^2*ρ*n/20 ≤ c) := by
+  dsimp only
+  let noExtra : Empty → Finset (CyclicEdgeSlot (V := CrossingPart S i) crossingNext) :=
+    fun j => j.elim
+  obtain ⟨sample,hDegree,hPair,_⟩ := exists_crossing_reserve_with_extra_counts S i F P Q p
+    noExtra (C := 0) hμ hξ hρ hρsmall hi hm hK hHalf hn hInit hδ hSmall hRound hBounds
+    (fun j => j.elim) (by simp) (by norm_num; exact hLarge) hZero hp hMean
+  exact ⟨sample,hDegree,hPair⟩
 
 /-- The concrete joint conclusion follows from (4.23), selecting the
 probabilities and the sample inside the proof. -/
