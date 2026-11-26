@@ -169,18 +169,21 @@ theorem abs_tail_bound_of_mean_le (p : I → ℝ) (hp : ∀ i, 0 ≤ p i) (hp' :
     _ ≤ M*t^2-t*D := sub_le_sub_right (mul_le_mul_of_nonneg_right hMean (sq_nonneg t)) _
     _ = _ := by dsimp only [t]; field_simp; ring
 
-private theorem exists_simultaneous_count_from_tails {J : Type*} [Fintype J] (p : I → ℝ)
-    (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1) (S : J → Finset I) (D C : ℝ)
-    (hTail : ∀ j, (∑ s ∈ univ.filter (fun s => D ≤ |count (S j) s - mean p (S j)|),
-      mass p s) ≤ C)
+/-- A finite family of bad events can be avoided in one Bernoulli
+sample if their total upper bound is below one. The events can use
+different statistics of the same sample. -/
+theorem exists_avoiding_bad_events {J : Type*} [Fintype J] (p : I → ℝ)
+    (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1)
+    (bad : J → (I → Bool) → Prop) (C : ℝ)
+    (hTail : ∀ j, (∑ s ∈ univ.filter (bad j), mass p s) ≤ C)
     (hUnion : (Fintype.card J : ℝ)*C < 1) :
-    ∃ s : I → Bool, ∀ j, |count (S j) s - mean p (S j)| ≤ D := by
+    ∃ s : I → Bool, ∀ j, ¬bad j s := by
   by_contra! h
   let B : J → Finset (I → Bool) := fun j =>
-    univ.filter (fun s => D ≤ |count (S j) s - mean p (S j)|)
+    univ.filter (fun s => bad j s)
   have hBad (s : I → Bool) : mass p s ≤ ∑ j, if s ∈ B j then mass p s else 0 := by
     obtain ⟨j,hj⟩ := h s
-    have hs : s ∈ B j := mem_filter.mpr ⟨mem_univ _,hj.le⟩
+    have hs : s ∈ B j := mem_filter.mpr ⟨mem_univ _,hj⟩
     have hh := single_le_sum
       (f := fun j => if s ∈ B j then mass p s else 0)
       (fun i _ => by split_ifs <;> first | exact mass_nonneg p hp hp' s | rfl)
@@ -206,6 +209,16 @@ private theorem exists_simultaneous_count_from_tails {J : Type*} [Fintype J] (p 
       _ = _ := by simp only [sum_const,card_univ,nsmul_eq_mul]
   rw [sum_mass] at hTotal
   exact (not_le_of_gt hUnion) (hTotal.trans hBounds)
+
+private theorem exists_simultaneous_count_from_tails {J : Type*} [Fintype J] (p : I → ℝ)
+    (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1) (S : J → Finset I) (D C : ℝ)
+    (hTail : ∀ j, (∑ s ∈ univ.filter (fun s => D ≤ |count (S j) s - mean p (S j)|),
+      mass p s) ≤ C)
+    (hUnion : (Fintype.card J : ℝ)*C < 1) :
+    ∃ s : I → Bool, ∀ j, |count (S j) s - mean p (S j)| ≤ D := by
+  obtain ⟨s,hs⟩ := exists_avoiding_bad_events p hp hp'
+    (fun j s => D ≤ |count (S j) s - mean p (S j)|) C hTail hUnion
+  exact ⟨s,fun j => (lt_of_not_ge (hs j)).le⟩
 
 /-- One sample simultaneously controls any finite family of counts with a
 common mean, provided the union bound is strictly below one. -/
