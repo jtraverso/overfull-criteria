@@ -1,0 +1,14 @@
+{
+  "challenge_module": "ChenShanRetentionChallenge",
+  "solution_module": "ChenShanRetentionSolution",
+  "theorem_names": [
+    "OverfullWork.ChenShan.exists_perfect_matching_retaining_exceptional_core_edges"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}

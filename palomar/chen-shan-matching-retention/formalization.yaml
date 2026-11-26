@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Retaining exceptional–core edges in a perfect matching"
+  description: "Lean formalization of Chen and Shan's Lemma 5.22, including the path reserve and the three ranges of the Tutte argument."
+  authors: ["Juan Pablo Traverso Gianini"]
+  responsible_maintainers: ["Juan Pablo Traverso Gianini"]
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C38", "05C70", "68V20"]
+
+sources:
+  - title: "An Asymptotically Sharp Form of the Overfull Conjecture"
+    authors: ["Guantao Chen", "Songling Shan"]
+    id: "arXiv:2611.32763v1"
+    location: "Section 5.3.1, Lemma 5.22."
+    relationship: formalizes
+
+status:
+  scope: "Lemma 5.22, with the same upper bound of 135720 on discarded matching edges."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-6"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4.35.0-rc3, Mathlib, Lake Comparator, and axiom audits."
+  spend_usd: "not tracked"
+  notes: "The Lean development and packaging were AI-assisted under human direction."
+
+fidelity:
+  divergences: "A graph on the core labels records adjacency between assigned vertex groups. Its paths lift to short paths in the original graph. The three cardinality ranges use induced complements and Mathlib's Tutte theorem."
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "The challenge is self-contained over the external dependencies and declares the theorem independently of its proof module."
+
+alignment:
+  namespace: "OverfullWork.ChenShan"
+  statements:
+    - source: "Lemma 5.22"
+      lean: "OverfullWork.ChenShan.exists_perfect_matching_retaining_exceptional_core_edges"
+      module: "OverfullWork.ChenShanMatchingRetention"
+      status: "formalized"
+
+acknowledgements: "Lean and Mathlib, and the authors of the mathematical source."
