@@ -103,20 +103,16 @@ private theorem shifted_bound (p : I → ℝ) (hp : ∀ i, 0 ≤ p i)
       mul_le_mul_of_nonneg_right (exponential_bound p hp hp' S ht) (exp_pos _).le
     _ = _ := by rw [← exp_add]; congr 1; ring
 
-/-- A two-sided Chernoff bound for independent Bernoulli variables with
-possibly different probabilities. -/
-theorem abs_tail_bound (p : I → ℝ) (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1)
-    (S : Finset I) {ε : ℝ} (hε : 0 ≤ ε) (hε' : ε ≤ 2) :
-    (∑ s ∈ univ.filter (fun s => ε * mean p S ≤ |count S s - mean p S|), mass p s) ≤
-      2 * exp (-(ε ^ 2 * mean p S / 4)) := by
-  let t := ε / 2
-  let b := t * (ε * mean p S)
-  have ht : 0 ≤ t := by dsimp [t]; positivity
-  have ht' : |t| ≤ 1 := by rw [abs_of_nonneg ht]; dsimp [t]; linarith only [hε']
+private theorem abs_tail_bound_at
+    (p : I → ℝ) (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1)
+    (S : Finset I) (D : ℝ) {t : ℝ} (ht : 0 ≤ t) (ht' : |t| ≤ 1) :
+    (∑ s ∈ univ.filter (fun s => D ≤ |count S s - mean p S|), mass p s) ≤
+      2 * exp (mean p S * t^2-t*D) := by
+  let b := t*D
   let P : (I → Bool) → ℝ := fun s =>
     exp (t * (count S s - mean p S) - b) +
       exp ((-t) * (count S s - mean p S) - b)
-  have hPoint (s : I → Bool) (hs : ε * mean p S ≤ |count S s - mean p S|) :
+  have hPoint (s : I → Bool) (hs : D ≤ |count S s - mean p S|) :
       1 ≤ P s := by
     rcases le_abs.mp hs with h | h
     · have hx : 1 ≤ exp (t * (count S s - mean p S) - b) :=
@@ -128,7 +124,7 @@ theorem abs_tail_bound (p : I → ℝ) (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i
         exact sub_nonneg.mpr (mul_le_mul_of_nonneg_left h ht)
       exact hx.trans (le_add_of_nonneg_left (exp_pos _).le)
   calc
-    _ ≤ ∑ s ∈ univ.filter (fun s => ε * mean p S ≤ |count S s - mean p S|),
+    _ ≤ ∑ s ∈ univ.filter (fun s => D ≤ |count S s - mean p S|),
           mass p s * P s := by
       apply sum_le_sum
       intro s hs
@@ -143,22 +139,45 @@ theorem abs_tail_bound (p : I → ℝ) (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i
       have hPlus := shifted_bound p hp hp' S ht' b
       have hMinus := shifted_bound p hp hp' S (by simpa only [abs_neg] using ht' : |-t| ≤ 1) b
       rw [neg_sq] at hMinus
-      have hExp : mean p S * t ^ 2 - b = -(ε ^ 2 * mean p S / 4) := by
-        dsimp only [t,b]
-        ring
-      rw [hExp] at hPlus hMinus
       linarith only [hPlus,hMinus]
 
-/-- One sample simultaneously controls any finite family of counts with a
-common mean, provided the union bound is strictly below one. -/
-theorem exists_simultaneous_count {J : Type*} [Fintype J] (p : I → ℝ)
-    (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1) (S : J → Finset I)
-    (μ : ℝ) (hμ : ∀ j, mean p (S j) = μ) {ε : ℝ} (hε : 0 ≤ ε) (hε' : ε ≤ 2)
-    (hUnion : (Fintype.card J : ℝ) * (2 * exp (-(ε ^ 2 * μ / 4))) < 1) :
-    ∃ s : I → Bool, ∀ j, |count (S j) s - μ| ≤ ε * μ := by
+/-- A two-sided Chernoff bound for independent Bernoulli variables with
+possibly different probabilities. -/
+theorem abs_tail_bound (p : I → ℝ) (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1)
+    (S : Finset I) {ε : ℝ} (hε : 0 ≤ ε) (hε' : ε ≤ 2) :
+    (∑ s ∈ univ.filter (fun s => ε * mean p S ≤ |count S s - mean p S|), mass p s) ≤
+      2 * exp (-(ε ^ 2 * mean p S / 4)) := by
+  have h := abs_tail_bound_at p hp hp' S (ε*mean p S) (t := ε/2) (by positivity)
+    (by rw [abs_of_nonneg (by positivity)]; linarith only [hε'])
+  rwa [show mean p S*(ε/2)^2-(ε/2)*(ε*mean p S) = -(ε^2*mean p S/4) by ring] at h
+
+/-- An absolute-threshold bound uniform for counts whose means have a
+common upper bound. -/
+theorem abs_tail_bound_of_mean_le (p : I → ℝ) (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1)
+    (S : Finset I) {M D : ℝ} (hM : 0 < M) (hMean : mean p S ≤ M)
+    (hD : 0 ≤ D) (hD' : D ≤ 2*M) :
+    (∑ s ∈ univ.filter (fun s => D ≤ |count S s - mean p S|), mass p s) ≤
+      2*exp (-(D^2/(4*M))) := by
+  let t := D/(2*M)
+  have ht : 0 ≤ t := by positivity
+  have ht' : |t| ≤ 1 := by
+    rw [abs_of_nonneg ht]
+    exact (div_le_iff₀ (by positivity : 0 < 2*M)).mpr (by simpa only [one_mul] using hD')
+  refine (abs_tail_bound_at p hp hp' S D ht ht').trans ?_
+  apply mul_le_mul_of_nonneg_left (exp_le_exp.mpr _) (by norm_num)
+  calc
+    _ ≤ M*t^2-t*D := sub_le_sub_right (mul_le_mul_of_nonneg_right hMean (sq_nonneg t)) _
+    _ = _ := by dsimp only [t]; field_simp; ring
+
+private theorem exists_simultaneous_count_from_tails {J : Type*} [Fintype J] (p : I → ℝ)
+    (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1) (S : J → Finset I) (D C : ℝ)
+    (hTail : ∀ j, (∑ s ∈ univ.filter (fun s => D ≤ |count (S j) s - mean p (S j)|),
+      mass p s) ≤ C)
+    (hUnion : (Fintype.card J : ℝ)*C < 1) :
+    ∃ s : I → Bool, ∀ j, |count (S j) s - mean p (S j)| ≤ D := by
   by_contra! h
   let B : J → Finset (I → Bool) := fun j =>
-    univ.filter (fun s => ε * μ ≤ |count (S j) s - μ|)
+    univ.filter (fun s => D ≤ |count (S j) s - mean p (S j)|)
   have hBad (s : I → Bool) : mass p s ≤ ∑ j, if s ∈ B j then mass p s else 0 := by
     obtain ⟨j,hj⟩ := h s
     have hs : s ∈ B j := mem_filter.mpr ⟨mem_univ _,hj.le⟩
@@ -178,14 +197,36 @@ theorem exists_simultaneous_count {J : Type*} [Fintype J] (p : I → ℝ)
         rw [← sum_filter]
         simp
   have hBounds : (∑ j, ∑ s ∈ B j, mass p s) ≤
-      (Fintype.card J : ℝ) * (2 * exp (-(ε ^ 2 * μ / 4))) := by
+      (Fintype.card J : ℝ) * C := by
     calc
-      _ ≤ ∑ _j : J, 2 * exp (-(ε ^ 2 * μ / 4)) := by
+      _ ≤ ∑ _j : J, C := by
         apply sum_le_sum
         intro j _
-        simpa only [B,hμ j] using abs_tail_bound p hp hp' (S j) hε hε'
+        exact hTail j
       _ = _ := by simp only [sum_const,card_univ,nsmul_eq_mul]
   rw [sum_mass] at hTotal
   exact (not_le_of_gt hUnion) (hTotal.trans hBounds)
+
+/-- One sample simultaneously controls any finite family of counts with a
+common mean, provided the union bound is strictly below one. -/
+theorem exists_simultaneous_count {J : Type*} [Fintype J] (p : I → ℝ)
+    (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1) (S : J → Finset I)
+    (μ : ℝ) (hμ : ∀ j, mean p (S j) = μ) {ε : ℝ} (hε : 0 ≤ ε) (hε' : ε ≤ 2)
+    (hUnion : (Fintype.card J : ℝ) * (2 * exp (-(ε ^ 2 * μ / 4))) < 1) :
+    ∃ s : I → Bool, ∀ j, |count (S j) s - μ| ≤ ε * μ := by
+  simpa only [hμ] using
+    exists_simultaneous_count_from_tails p hp hp' S (ε*μ) (2*exp (-(ε^2*μ/4)))
+      (fun j => by simpa only [hμ j] using abs_tail_bound p hp hp' (S j) hε hε') hUnion
+
+/-- One sample controls all counts when their means have a common upper
+bound and the absolute-threshold union bound is strictly below one. -/
+theorem exists_simultaneous_count_of_mean_le {J : Type*} [Fintype J]
+    (p : I → ℝ) (hp : ∀ i, 0 ≤ p i) (hp' : ∀ i, p i ≤ 1) (S : J → Finset I)
+    {M D : ℝ} (hM : 0 < M) (hMean : ∀ j, mean p (S j) ≤ M)
+    (hD : 0 ≤ D) (hD' : D ≤ 2*M)
+    (hUnion : (Fintype.card J : ℝ)*(2*exp (-(D^2/(4*M)))) < 1) :
+    ∃ s : I → Bool, ∀ j, |count (S j) s-mean p (S j)| ≤ D :=
+  exists_simultaneous_count_from_tails p hp hp' S D _
+    (fun j => abs_tail_bound_of_mean_le p hp hp' (S j) hM (hMean j) hD hD') hUnion
 
 end OverfullWork.IndependentBernoulliSampling
