@@ -82,6 +82,33 @@ theorem arcBalanced_of_tripartiteLocallyBalanced [Fintype A] [Fintype B] [Fintyp
     simp [Fintype.sum_sum_type,tripartiteArc, -Finset.sum_boole]
     convert ht using 1 <;> apply Finset.sum_congr rfl <;> intro i _ <;> split_ifs <;> simp_all
 
+theorem tripartiteLocallyBalanced_of_arcBalanced [Fintype A] [Fintype B] [Fintype W]
+    {E : A → B → Prop} {l : A → W → Prop} {r : B → W → Prop}
+    (h : ArcBalanced (tripartiteArcs E l r)) : TripartiteLocallyBalanced E l r := by
+  constructor
+  · intro a
+    have ht := h (Sum.inl a)
+    unfold tripartiteArcs at ht
+    rw [card_filter_arcs_out,card_filter_arcs_in] at ht
+    rw [Fintype.card_subtype,Fintype.card_subtype,card_filter,card_filter]
+    simp [Fintype.sum_sum_type,tripartiteArc,-Finset.sum_boole] at ht
+    convert ht using 1 <;> apply Finset.sum_congr rfl <;> intro i _ <;> split_ifs <;> simp_all
+  constructor
+  · intro b
+    have ht := (h (Sum.inr (Sum.inl b))).symm
+    unfold tripartiteArcs at ht
+    rw [card_filter_arcs_out,card_filter_arcs_in] at ht
+    rw [Fintype.card_subtype,Fintype.card_subtype,card_filter,card_filter]
+    simp [Fintype.sum_sum_type,tripartiteArc,-Finset.sum_boole] at ht
+    convert ht using 1 <;> apply Finset.sum_congr rfl <;> intro i _ <;> split_ifs <;> simp_all
+  · intro w
+    have ht := h (Sum.inr (Sum.inr w))
+    unfold tripartiteArcs at ht
+    rw [card_filter_arcs_out,card_filter_arcs_in] at ht
+    rw [Fintype.card_subtype,Fintype.card_subtype,card_filter,card_filter]
+    simp [Fintype.sum_sum_type,tripartiteArc,-Finset.sum_boole] at ht
+    convert ht using 1 <;> apply Finset.sum_congr rfl <;> intro i _ <;> split_ifs <;> simp_all
+
 private def tripartiteClass : A ⊕ (B ⊕ W) → ZMod 3
   | .inl _ => 0
   | .inr (.inl _) => 1
