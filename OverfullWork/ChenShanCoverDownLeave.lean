@@ -201,6 +201,7 @@ theorem exists_repaired_packing_leave
     (η ζ : ℝ) (hη : 0 < η) (hηone : η < 1) (hζ : 0 < ζ) :
     ∃ ε₀ : ℝ, ∃ n₀ : ℕ, 0 < ε₀ ∧
     ∀ (n : ℕ), n₀ ≤ n →
+    ∀ (A : Type uA) (B : Type uB) (W : Type uW) [Fintype A] [Fintype B] [Fintype W],
     ∀ (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
     (ξ ε : ℝ), 0 ≤ ξ → 0 ≤ ε →
     (Real.sqrt ξ ≤ min (η/32) (1/128)) →
@@ -224,9 +225,9 @@ theorem exists_repaired_packing_leave
   have hη₂ : 0 < η/2 := by positivity
   have hη₂' : η/2 < 1/2 := by linarith only [hηone]
   obtain ⟨ε₀,n₀,hε₀,hPack⟩ :=
-    exists_triangle_packing_with_small_balanced_leave (η/2) (ζ/2) hη₂ hη₂' (by positivity)
+    exists_triangle_packing_with_small_balanced_leave.{uA,uB,uW} (η/2) (ζ/2) hη₂ hη₂' (by positivity)
   refine ⟨ε₀,n₀,hε₀,?_⟩
-  intro n hn E P Q ξ ε hξ hε₁ hSmall hA hB hW hAB hBA hε hAW hBW hWA hWB hThreshold hRepair hImbalance
+  intro n hn A B W _ _ _ E P Q ξ ε hξ hε₁ hSmall hA hB hW hAB hBA hε hAW hBW hWA hWB hThreshold hRepair hImbalance
   let G := tripartiteArcs E P Q
   obtain ⟨D,hD,hDegree,hDense⟩ := exists_repaired_dense_remainder E P Q n hη hξ
     hSmall hA hB hW hAB hBA hε hAW hBW hWA hWB hImbalance
@@ -268,6 +269,7 @@ theorem exists_cover_down_leave_after_reserve
     (η ζ : ℝ) (hη : 0 < η) (hηone : η < 1) (hζ : 0 < ζ) :
     ∃ ε₀ : ℝ, ∃ n₀ : ℕ, 0 < ε₀ ∧
     ∀ (n : ℕ), n₀ ≤ n →
+    ∀ (A : Type uA) (B : Type uB) (W : Type uW) [Fintype A] [Fintype B] [Fintype W],
     ∀ (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
       (U : Finset (TripartiteVertex A B W)) (R : TripartiteArcSet A B W),
     let G := tripartiteArcs E P Q
@@ -293,10 +295,10 @@ theorem exists_cover_down_leave_after_reserve
       L ⊆ H ∧ (∀ v, (incidentDegree L v : ℝ) ≤ ζ*n) ∧
       (↑(triangleHypergraph T) : Set (Finset (OrientedTripartiteEdge A B W))).PairwiseDisjoint id ∧
       H \ L = coveredEdges (triangleHypergraph T) ∧ ArcBalanced (GU ∪ R ∪ L) := by
-  obtain ⟨ε₀,n₀,hε₀,hPack⟩ := exists_repaired_packing_leave (A := A) (B := B) (W := W)
+  obtain ⟨ε₀,n₀,hε₀,hPack⟩ := exists_repaired_packing_leave.{uA,uB,uW}
     η ζ hη hηone hζ
   refine ⟨ε₀,n₀,hε₀,?_⟩
-  intro n hn E P Q U R G GU H ξ s ε hξ hs hRound hε₀' hR hG hUdeg hRdeg hSmall hA hB hW hAB hBA
+  intro n hn A B W _ _ _ E P Q U R G GU H ξ s ε hξ hs hRound hε₀' hR hG hUdeg hRdeg hSmall hA hB hW hAB hBA
     hε hAW hBW hWA hWB hThreshold hRepair
   have hGU : GU ⊆ G := inter_subset_left
   have hR' : R ⊆ G \ GU := hR
@@ -310,7 +312,7 @@ theorem exists_cover_down_leave_after_reserve
     congr 6
     ext e
     simp only [H,mem_sdiff]
-  have hResult := hPack n hn
+  have hResult := hPack n hn A B W
     (baseRelation H) (leftColorRelation H) (rightColorRelation H) (4*ξ) ε
     (by positivity) hε₀' hSmall hA hB hW
     (by intro a; convert hAB a using 1; congr 4)
