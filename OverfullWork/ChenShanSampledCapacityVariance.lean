@@ -254,4 +254,49 @@ theorem exists_block_sample_avoiding {J : Type*} [Fintype J]
     simpa only [mul_one, Finset.mul_sum] using mul_le_mul_of_nonneg_left (hPoint t) (blockPartsMass_nonneg s t)
   exact (not_lt_of_ge (hMass.trans (sum_le_sum fun j _ => hRisk j))) hSum
 
+
+/-- Preferred-edge test for an active special vertex, where each
+weight counts parallel edges to a core vertex on its preferred side. -/
+theorem sampled_special_preferred_degree_lower_tail
+    (s : I → ℕ) (p a c : ℝ)
+    (hs : ∀ i, s i ≤ Fintype.card (V i))
+    (hFrac : ∀ i, (s i:ℝ)/Fintype.card (V i) = p)
+    (hp : 0 < p) (ha : 0 ≤ a) (hc : 0 < c)
+    (w : ∀ i, V i → ℝ) (hw : ∀ i v, 0 ≤ w i v ∧ w i v ≤ a)
+    (hPreferred : c/2 ≤ ∑ i, ∑ v, w i v) :
+    let X (t : BlockParts (V := V) s) := ∑ i, ∑ v ∈ (t i).val, w i v
+    blockMean (blockPartsMass s) (fun t => eventIndicator (X t < p*c/3)) ≤
+      18*a/(p*c) := by
+  intro X
+  let d := ∑ i, ∑ v, w i v
+  let μ := p*d
+  have hd : 0 < d := by linarith only [hc,hPreferred]
+  have hμ : 0 < μ := mul_pos hp hd
+  have hPref := mul_le_mul_of_nonneg_left hPreferred hp.le
+  obtain ⟨hMean,hSecond⟩ := block_parts_degree_moments s p a hs hFrac hp.le w hw
+  change blockMean (blockPartsMass s) X = μ at hMean
+  change blockMean (blockPartsMass s) (fun t => (X t)^2) ≤ μ*(μ+a) at hSecond
+  have hGap : p*c/3+μ/3 ≤ blockMean (blockPartsMass s) X := by
+    rw [hMean]
+    dsimp only [μ]
+    nlinarith only [hPref]
+  have hVar : blockVariance (blockPartsMass s) X ≤ μ*a := by
+    unfold blockVariance
+    rw [hMean]
+    nlinarith only [hSecond]
+  have hTail := blockMean_below_threshold_le_variance_div (blockPartsMass s)
+    (blockPartsMass_nonneg s) (blockPartsMass_sum s hs) X (p*c/3) (μ/3)
+    (by positivity) hGap
+  refine hTail.trans ((div_le_div_of_nonneg_right hVar (sq_nonneg _)).trans ?_)
+  have hExact : μ*a/(μ/3)^2 = 9*a/μ := by
+    field_simp [hμ.ne']
+    ring
+  rw [hExact]
+  have hDenom : p*c/2 ≤ μ := by
+    dsimp only [μ]
+    nlinarith only [hPref]
+  calc
+    _ ≤ 9*a/(p*c/2) := div_le_div_of_nonneg_left (by positivity) (by positivity) hDenom
+    _ = _ := by ring
+
 end OverfullWork.ChenShan
