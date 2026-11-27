@@ -84,6 +84,7 @@ theorem cover_down_levels_of_scalar_bounds_uniform
     (hρ : 0 < ρ) (hρsmall : ρ ≤ 1/4) (hη : 0 < η)
     (hμ : 0 ≤ μ) (hδ : 0 < δmin) (hξ : 0 < ξ) :
     ∃ cutoff : ℕ, ∀ δ : ℝ, δmin ≤ δ → CoverDownScalarBounds ρ η η₀ μ ζ δ ξ cap →
+      ∀ (A B W : Type u) [Fintype A] [Fintype B] [Fintype W] (m k l : ℕ),
       ∀ (S : NestedTripartitePrefixes A B W ρ m k l),
       (∀ i ≤ l, cutoff ≤ nestedCoreSize ρ m i) →
       1/2 ≤ (k:ℝ)/m → (k:ℝ)/m ≤ 3/2 →
@@ -91,7 +92,7 @@ theorem cover_down_levels_of_scalar_bounds_uniform
   let T := 5184/(min ((min (ξ/2) μ)^2/(16*μ)) (μ^2*ρ/204800))^3
   obtain ⟨b,hb⟩ := exists_nat_gt (max T (max (6/ρ) (max (1/δmin) (max (1/η) (1/ξ)))))
   refine ⟨max (max n₀ N₀) (max b 1),?_⟩
-  intro δ hδle h S hSize hLower hUpper i hi
+  intro δ hδle h A B W _ _ _ m k l S hSize hLower hUpper i hi
   have hi' : i+1 ≤ l := by omega
   let n := nestedCoreSize ρ m i
   let s := nestedCoreSize ρ m (i+1)
@@ -161,8 +162,8 @@ theorem cover_down_levels_of_scalar_bounds
       (∀ i ≤ l, cutoff ≤ nestedCoreSize ρ m i) →
       1/2 ≤ (k:ℝ)/m → (k:ℝ)/m ≤ 3/2 →
       ∀ i < l, CoverDownLevelBounds S i n₀ N₀ η η₀ μ ζ δ ξ cap := by
-  obtain ⟨cutoff,hCut⟩ := cover_down_levels_of_scalar_bounds_uniform
-    (A := A) (B := B) (W := W) (m := m) (k := k) (l := l) n₀ N₀ hρ hρsmall hη hμ hδ hξ
-  exact ⟨cutoff,hCut δ le_rfl h⟩
+  obtain ⟨cutoff,hCut⟩ := cover_down_levels_of_scalar_bounds_uniform.{u}
+    n₀ N₀ hρ hρsmall hη hμ hδ hξ
+  exact ⟨cutoff,hCut δ le_rfl h A B W m k l⟩
 
 end OverfullWork.ChenShan

@@ -183,6 +183,7 @@ the complement of the leave in the ambient cut remainder. -/
 theorem exists_concrete_cover_down_leave
     (η ζ : ℝ) (hη : 0 < η) (hηhalf : η ≤ 1/2) (hζ : 0 < ζ) :
     ∃ ε₀ : ℝ, ∃ n₀ : ℕ, ε₀ = coverDownPackingCap (η/2/2) ∧ 0 < ε₀ ∧
+    ∀ (A B W : Type u) [Fintype A] [Fintype B] [Fintype W] (m k l : ℕ),
     ∀ (S : NestedTripartitePrefixes A B W ρ m k l) (i : ℕ), i+1 ≤ l →
     ∀ (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
       (R : TripartiteArcSet A B W) (δ μ ξ : ℝ),
@@ -215,7 +216,7 @@ theorem exists_concrete_cover_down_leave
   obtain ⟨ε₀,n₀,hCap,hε₀,hPack⟩ :=
     exists_cover_down_leave_after_reserve.{u,u,u} (η/2) ζ hη₂ hη₂' hζ
   refine ⟨ε₀,n₀,hCap,hε₀,?_⟩
-  intro S i hi E P Q R δ μ ξ n s U G GU H ε f hn₀ hm hρ hρsmall hInit
+  intro A B W _ _ _ m k l S i hi E P Q R δ μ ξ n s U G GU H ε f hn₀ hm hρ hρsmall hInit
     hDensity hRatio hSlack hξ hRound hε hMargin hCap hSmall hThreshold hRepair
     hBounds hGSupport hRSub hGBal hGUdeg hRdeg
   let A' := ↥(S.left i)

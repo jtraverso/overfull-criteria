@@ -139,6 +139,7 @@ theorem exists_all_levels_cover_down_packing
     (hη₀ : 0 < η₀) (hη₀small : η₀ ≤ 1/80) (hEta : 40*η₀ ≤ η) (hηhalf : η ≤ 1/2)
     (hμ : 0 < μ) (hμsmall : 10*μ ≤ 1) (hζ : 0 < ζ) (hξ : 0 < ξ) :
     ∃ cap : ℝ, ∃ n₀ N₀ : ℕ, cap = coverDownPackingCap (η/2/2) ∧ 0 < cap ∧
+    ∀ (A B W : Type u) [Fintype A] [Fintype B] [Fintype W] (m k l : ℕ),
     ∀ (S : NestedTripartitePrefixes A B W ρ m k l)
       (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop) (ε : ℝ)
       (Abs : TripartiteArcSet A B W),
@@ -154,11 +155,10 @@ theorem exists_all_levels_cover_down_packing
       L ⊆ G \ Abs ∧ L ⊆ G ∩ (S.vertices l ×ˢ S.vertices l) ∧ ArcBalanced L ∧
       (↑T : Set (Finset (OrientedTripartiteEdge A B W))).PairwiseDisjoint id ∧
       (∀ t ∈ T, IsCoverDownTriangle t) ∧ coveredEdges T = (G \ Abs) \ L := by
-  obtain ⟨cap,n₀,N₀,hPackingCap,hCap,hRound⟩ := exists_cover_down_transition
-    (A := A) (B := B) (W := W) (m := m) (k := k) (l := l)
+  obtain ⟨cap,n₀,N₀,hPackingCap,hCap,hRound⟩ := exists_cover_down_transition.{u}
     hρ hρsmall hη₀ hη₀small hEta hηhalf hμ hμsmall hζ
   refine ⟨cap,n₀,N₀,hPackingCap,hCap,?_⟩
-  intro S E P Q ε Abs G δ hm hk hW hε hDense hLower hUpper hSample hLevels hAbs hAbsDisj hAbsBal hAbsDeg
+  intro A B W _ _ _ m k l S E P Q ε Abs G δ hm hk hW hε hDense hLower hUpper hSample hLevels hAbs hAbsDisj hAbsBal hAbsDeg
   let β : ℝ := 20*μ/ρ
   let initial := G \ Abs
   let Inv (i : ℕ) (H : TripartiteArcSet A B W) : Prop :=
@@ -233,7 +233,7 @@ theorem exists_all_levels_cover_down_packing
       exact_mod_cast (card_le_card (sdiff_subset : (S.vertices i \ U) ⊆ S.vertices i)).trans
         (S.vertices_card_le hm hK' i (by omega) hni)
     have hδ : 0 ≤ δ := by dsimp only [δ]; positivity
-    have hh := hRound S i N hi' (baseRelation H) (leftColorRelation H) (rightColorRelation H) δ ξ
+    have hh := hRound A B W m k l S i N hi' (baseRelation H) (leftColorRelation H) (rightColorRelation H) δ ξ
       hBound.outerThreshold (hBound.innerThreshold.trans hNN) hm hδ hξ hBound.coreLarge hBound.roundDelta
       hLower hUpper hBound.roundEta hBound.densityCost hBound.probWindow hBound.discrepancy
       hBound.samplingThreshold hBound.roundXi hBound.baseDegree hBound.colorDegree hBound.repairSmall

@@ -24,6 +24,7 @@ theorem exists_cover_down_transition
     (hη₀ : 0 < η₀) (hη₀small : η₀ ≤ 1/80) (hEta : 40*η₀ ≤ η) (hηhalf : η ≤ 1/2)
     (hμ : 0 < μ) (hμsmall : 10*μ ≤ 1) (hζ : 0 < ζ) :
     ∃ ε₀ : ℝ, ∃ n₀ N₀ : ℕ, ε₀ = coverDownPackingCap (η/2/2) ∧ 0 < ε₀ ∧
+    ∀ (A B W : Type u) [Fintype A] [Fintype B] [Fintype W] (m k l : ℕ),
     ∀ (S : NestedTripartitePrefixes A B W ρ m k l) (i N : ℕ), i+1 ≤ l →
     ∀ (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop) (δ ξ : ℝ),
     let n := nestedCoreSize ρ m i
@@ -58,13 +59,11 @@ theorem exists_cover_down_transition
   have hη : 0 < η := by linarith only [hEta,hη₀]
   have hρone : ρ ≤ 1 := by linarith only [hρsmall]
   have hμcap : μ < 1/4 := by linarith only [hμsmall]
-  obtain ⟨ε₀,n₀,hPackingCap,hε₀,hCut⟩ := exists_concrete_cover_down_leave
-    (A := A) (B := B) (W := W) (ρ := ρ) (m := m) (k := k) (l := l) η ζ hη hηhalf hζ
-  obtain ⟨N₀,hAfter⟩ := exists_cover_down_transition_after_cut
-    (A := A) (B := B) (W := W) (ρ := ρ) (m := m) (k := k) (l := l)
+  obtain ⟨ε₀,n₀,hPackingCap,hε₀,hCut⟩ := exists_concrete_cover_down_leave.{u} (ρ := ρ) η ζ hη hηhalf hζ
+  obtain ⟨N₀,hAfter⟩ := exists_cover_down_transition_after_cut.{u}
     hρ hρone hμ hμsmall hη₀.le
   refine ⟨ε₀,n₀,N₀,hPackingCap,hε₀,?_⟩
-  intro S i N hi E P Q δ ξ n s U X K G GU ε hn hN₀ hm hδ hξ hInit hδn
+  intro A B W _ _ _ m k l S i N hi E P Q δ ξ n s U X K G GU ε hn hN₀ hm hδ hξ hInit hδn
     hDensity hRatio hηn hMin hClose hξsmall hLarge hRound hMargin hCap hSmall hThreshold hRepair
     hN hNup hU hX hCost hζSmall hExteriorCost hLoadCost hProtect hb hSupport hBal hInterior
   obtain ⟨R,hR,hCross,hR1,hR2,hR3,hR4,hR5⟩ :=
@@ -76,7 +75,7 @@ theorem exists_cover_down_transition
     simp only [mem_sdiff] at hh ⊢
     exact ⟨hh.1,fun hu => hh.2 (mem_inter.mp hu).2⟩
   have hInit' : 1 ≤ ρ*(n:ℝ) := by linarith only [hInit]
-  obtain ⟨L,T,hL,hLDeg,hT,hCovered,hTBal⟩ := hCut S i hi E P Q R δ μ ξ hn hm hρ
+  obtain ⟨L,T,hL,hLDeg,hT,hCovered,hTBal⟩ := hCut A B W m k l S i hi E P Q R δ μ ξ hn hm hρ
     hρsmall hInit' hDensity hRatio hηn hξ.le hRound (by positivity) hMargin hCap hSmall
     hThreshold hRepair hb hSupport hR' hBal hInterior hR1
   let f := prefixVertexEmbedding S i
@@ -96,7 +95,7 @@ theorem exists_cover_down_transition
       arcNeighborsIn Z R v = Z.filter (fun z => (v,z) ∈ R ∨ (z,v) ∈ R) := by
     ext z
     simp only [mem_arcNeighborsIn,mem_filter]
-  have h := hAfter N hN₀ S i E P Q R Lmap T₀ ξ ζ hN hNup hU hX hCost hζSmall
+  have h := hAfter N hN₀ A B W m k l S i E P Q R Lmap T₀ ξ ζ hN hNup hU hX hCost hζSmall
     (by positivity) hExteriorCost hLoadCost hProtect hSupport hR'
     (fun ⟨a,b⟩ he => hCross a b he) (fun v => (hR1 v).2)
     (by

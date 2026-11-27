@@ -187,6 +187,7 @@ theorem exists_concrete_round_matching_end
     {μ η : ℝ} (hρ : 0 < ρ) (hρone : ρ ≤ 1) (hμ : 0 < μ)
     (hμsmall : 10*μ ≤ 1) (hη : 0 ≤ η) :
     ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N →
+    ∀ (A B W : Type u) [Fintype A] [Fintype B] [Fintype W] (m k l : ℕ),
     ∀ (S : NestedTripartitePrefixes A B W ρ m k l) (i : ℕ)
       (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
       (R C J : TripartiteArcSet A B W) (ξ ζ : ℝ),
@@ -228,7 +229,7 @@ theorem exists_concrete_round_matching_end
     exact_mod_cast hb'
   obtain ⟨N₀,hPack⟩ := exists_cover_down_round_end.{u} b hb (10*μ) η (by positivity) hμsmall
   refine ⟨N₀,?_⟩
-  intro N hN₀ S i E P Q R C J ξ ζ n U X K GU R'
+  intro N hN₀ A B W _ _ _ m k l S i E P Q R C J ξ ζ n U X K GU R'
     hN hNup hU hX hMargin hSmall hSlack hArc hCross hBal hC hJ hSize hOld hR5 hOverlap hLoad
   let F (v : ↥X) := arcOutNeighbors R' v.val
   let G (v : ↥X) := arcInNeighbors R' v.val

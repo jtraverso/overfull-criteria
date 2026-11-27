@@ -198,6 +198,7 @@ transition, including (4.25), (4.26), and the matching phase. -/
 theorem exists_cover_down_transition_after_cut
     {μ η : ℝ} (hρ : 0 < ρ) (hρone : ρ ≤ 1) (hμ : 0 < μ) (hμsmall : 10*μ ≤ 1) (hη : 0 ≤ η) :
     ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N →
+    ∀ (A B W : Type u) [Fintype A] [Fintype B] [Fintype W] (m k l : ℕ),
     ∀ (S : NestedTripartitePrefixes A B W ρ m k l) (i : ℕ)
       (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
       (R L : TripartiteArcSet A B W) (T₀ : Finset (Finset (OrientedTripartiteEdge A B W)))
@@ -238,10 +239,9 @@ theorem exists_cover_down_transition_after_cut
       coveredEdges T = G \ (GU \ M) ∧ M ⊆ GU \ (K ×ˢ K) ∧
       (∀ v, (incidentDegree M v : ℝ) ≤ 20*μ*n) ∧
       ArcBalanced (GU \ M) ∧ (GU \ M) ∩ (K ×ˢ K) = GU ∩ (K ×ˢ K) := by
-  obtain ⟨N₀,hEnd⟩ := exists_concrete_round_matching_end (m := m) (k := k) (l := l)
-    (A := A) (B := B) (W := W) hρ hρone hμ hμsmall hη
+  obtain ⟨N₀,hEnd⟩ := exists_concrete_round_matching_end.{u} hρ hρone hμ hμsmall hη
   refine ⟨N₀,?_⟩
-  intro N hN₀ S i E P Q R L T₀ ξ ζ n U X K G GU H
+  intro N hN₀ A B W _ _ _ m k l S i E P Q R L T₀ ξ ζ n U X K G GU H
     hN hNup hU hX hCost hsmall hζ hCrossCost hLoadCost hSlack hSupport hR hCross hRdeg
     hR2 hR3 hR4 hR5 hL hLDeg hPack hCert hCov hBal
   let D := L ∩ (X ×ˢ X)
@@ -278,7 +278,7 @@ theorem exists_cover_down_transition_after_cut
   have hCross' : ∀ e ∈ R', CrossesNestedPrefix S i e.1 e.2 :=
     cover_down_updated_reserve_crosses S i R C L hCross (hLsub.trans hSupport) hLNo
   obtain ⟨T₂,M,hT₂,hCov₂,hM,hMDeg,hNext,hKeep,hCert₂⟩ :=
-    hEnd N hN₀ S i E P Q R C J ξ ζ hN hNup hU hX hCost hsmall hSlack
+    hEnd N hN₀ A B W m k l S i E P Q R C J ξ ζ hN hNup hU hX hCost hsmall hSlack
       hR' hCross' hBal' hUseDeg hJdeg hR2 hR4 hR5 hInter hLoad
   let T₁ := D.image (fun e => exteriorTriangle e (label e))
   have hCov₁ : coveredEdges T₁ = D ∪ C := by
