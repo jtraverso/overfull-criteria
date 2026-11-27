@@ -79,19 +79,19 @@ theorem cover_down_protected_part_card
 
 /-- One cutoff on the retained core sizes supplies every numerical
 obligation of each round from the scalar inequalities. -/
-theorem cover_down_levels_of_scalar_bounds
-    {η η₀ μ ζ δ ξ cap : ℝ} (n₀ N₀ : ℕ)
+theorem cover_down_levels_of_scalar_bounds_uniform
+    {η η₀ μ ζ δmin ξ cap : ℝ} (n₀ N₀ : ℕ)
     (hρ : 0 < ρ) (hρsmall : ρ ≤ 1/4) (hη : 0 < η)
-    (hμ : 0 ≤ μ) (hδ : 0 < δ) (hξ : 0 < ξ)
-    (h : CoverDownScalarBounds ρ η η₀ μ ζ δ ξ cap) :
-    ∃ cutoff : ℕ, ∀ (S : NestedTripartitePrefixes A B W ρ m k l),
+    (hμ : 0 ≤ μ) (hδ : 0 < δmin) (hξ : 0 < ξ) :
+    ∃ cutoff : ℕ, ∀ δ : ℝ, δmin ≤ δ → CoverDownScalarBounds ρ η η₀ μ ζ δ ξ cap →
+      ∀ (S : NestedTripartitePrefixes A B W ρ m k l),
       (∀ i ≤ l, cutoff ≤ nestedCoreSize ρ m i) →
       1/2 ≤ (k:ℝ)/m → (k:ℝ)/m ≤ 3/2 →
       ∀ i < l, CoverDownLevelBounds S i n₀ N₀ η η₀ μ ζ δ ξ cap := by
   let T := 5184/(min ((min (ξ/2) μ)^2/(16*μ)) (μ^2*ρ/204800))^3
-  obtain ⟨b,hb⟩ := exists_nat_gt (max T (max (6/ρ) (max (1/δ) (max (1/η) (1/ξ)))))
+  obtain ⟨b,hb⟩ := exists_nat_gt (max T (max (6/ρ) (max (1/δmin) (max (1/η) (1/ξ)))))
   refine ⟨max (max n₀ N₀) (max b 1),?_⟩
-  intro S hSize hLower hUpper i hi
+  intro δ hδle h S hSize hLower hUpper i hi
   have hi' : i+1 ≤ l := by omega
   let n := nestedCoreSize ρ m i
   let s := nestedCoreSize ρ m (i+1)
@@ -102,7 +102,7 @@ theorem cover_down_levels_of_scalar_bounds
   have hbS : (b:ℝ) ≤ s := by
     exact_mod_cast (le_max_left b 1).trans ((le_max_right _ _).trans hs)
   have hor : (6:ℝ)/ρ < b := (le_max_left _ _).trans_lt ((le_max_right _ _).trans_lt hb)
-  have hDelta : (1:ℝ)/δ < b := (le_max_left _ _).trans_lt
+  have hDelta : (1:ℝ)/δmin < b := (le_max_left _ _).trans_lt
     ((le_max_right _ _).trans_lt ((le_max_right _ _).trans_lt hb))
   have hEta : (1:ℝ)/η < b := (le_max_left _ _).trans_lt
     ((le_max_right _ _).trans_lt ((le_max_right _ _).trans_lt ((le_max_right _ _).trans_lt hb)))
@@ -120,7 +120,8 @@ theorem cover_down_levels_of_scalar_bounds
   · exact (le_max_right _ _).trans ((le_max_left _ _).trans hs)
   · exact hρn
   · have hh := (div_lt_iff₀ hδ).mp (hDelta.trans_le hbN)
-    linarith only [hh]
+    have hd := mul_le_mul_of_nonneg_right hδle hN₀
+    linarith only [hh,hd]
   · have hh := (div_lt_iff₀ hη).mp (hEta.trans_le hbN)
     linarith only [hh]
   · exact h.densityCost
@@ -150,5 +151,18 @@ theorem cover_down_levels_of_scalar_bounds
     have hScale := mul_le_mul_of_nonneg_left hh (show 0 ≤ 3*μ by positivity)
     have hP := mul_le_mul_of_nonneg_right h.protection hN₀
     linarith only [hScale,hP]
+
+theorem cover_down_levels_of_scalar_bounds
+    {η η₀ μ ζ δ ξ cap : ℝ} (n₀ N₀ : ℕ)
+    (hρ : 0 < ρ) (hρsmall : ρ ≤ 1/4) (hη : 0 < η)
+    (hμ : 0 ≤ μ) (hδ : 0 < δ) (hξ : 0 < ξ)
+    (h : CoverDownScalarBounds ρ η η₀ μ ζ δ ξ cap) :
+    ∃ cutoff : ℕ, ∀ (S : NestedTripartitePrefixes A B W ρ m k l),
+      (∀ i ≤ l, cutoff ≤ nestedCoreSize ρ m i) →
+      1/2 ≤ (k:ℝ)/m → (k:ℝ)/m ≤ 3/2 →
+      ∀ i < l, CoverDownLevelBounds S i n₀ N₀ η η₀ μ ζ δ ξ cap := by
+  obtain ⟨cutoff,hCut⟩ := cover_down_levels_of_scalar_bounds_uniform
+    (A := A) (B := B) (W := W) (m := m) (k := k) (l := l) n₀ N₀ hρ hρsmall hη hμ hδ hξ
+  exact ⟨cutoff,hCut δ le_rfl h⟩
 
 end OverfullWork.ChenShan

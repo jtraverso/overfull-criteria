@@ -199,7 +199,7 @@ theorem exists_repaired_dense_remainder
 bound and exact packed complement in (4.24). -/
 theorem exists_repaired_packing_leave
     (η ζ : ℝ) (hη : 0 < η) (hηone : η < 1) (hζ : 0 < ζ) :
-    ∃ ε₀ : ℝ, ∃ n₀ : ℕ, 0 < ε₀ ∧
+    ∃ ε₀ : ℝ, ∃ n₀ : ℕ, ε₀ = coverDownPackingCap (η/2) ∧ 0 < ε₀ ∧
     ∀ (n : ℕ), n₀ ≤ n →
     ∀ (A : Type uA) (B : Type uB) (W : Type uW) [Fintype A] [Fintype B] [Fintype W],
     ∀ (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
@@ -224,9 +224,9 @@ theorem exists_repaired_packing_leave
       G \ L = coveredEdges (triangleHypergraph T) := by
   have hη₂ : 0 < η/2 := by positivity
   have hη₂' : η/2 < 1/2 := by linarith only [hηone]
-  obtain ⟨ε₀,n₀,hε₀,hPack⟩ :=
-    exists_triangle_packing_with_small_balanced_leave.{uA,uB,uW} (η/2) (ζ/2) hη₂ hη₂' (by positivity)
-  refine ⟨ε₀,n₀,hε₀,?_⟩
+  obtain ⟨ε₀,n₀,hCap,hε₀,hPack⟩ :=
+    exists_triangle_packing_with_explicit_cap.{uA,uB,uW} (η/2) (ζ/2) hη₂ hη₂' (by positivity)
+  refine ⟨ε₀,n₀,hCap,hε₀,?_⟩
   intro n hn A B W _ _ _ E P Q ξ ε hξ hε₁ hSmall hA hB hW hAB hBA hε hAW hBW hWA hWB hThreshold hRepair hImbalance
   let G := tripartiteArcs E P Q
   obtain ⟨D,hD,hDegree,hDense⟩ := exists_repaired_dense_remainder E P Q n hη hξ
@@ -267,7 +267,7 @@ theorem exists_repaired_packing_leave
 the imbalance bound and obtain the leave in (4.24). -/
 theorem exists_cover_down_leave_after_reserve
     (η ζ : ℝ) (hη : 0 < η) (hηone : η < 1) (hζ : 0 < ζ) :
-    ∃ ε₀ : ℝ, ∃ n₀ : ℕ, 0 < ε₀ ∧
+    ∃ ε₀ : ℝ, ∃ n₀ : ℕ, ε₀ = coverDownPackingCap (η/2) ∧ 0 < ε₀ ∧
     ∀ (n : ℕ), n₀ ≤ n →
     ∀ (A : Type uA) (B : Type uB) (W : Type uW) [Fintype A] [Fintype B] [Fintype W],
     ∀ (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop)
@@ -295,9 +295,9 @@ theorem exists_cover_down_leave_after_reserve
       L ⊆ H ∧ (∀ v, (incidentDegree L v : ℝ) ≤ ζ*n) ∧
       (↑(triangleHypergraph T) : Set (Finset (OrientedTripartiteEdge A B W))).PairwiseDisjoint id ∧
       H \ L = coveredEdges (triangleHypergraph T) ∧ ArcBalanced (GU ∪ R ∪ L) := by
-  obtain ⟨ε₀,n₀,hε₀,hPack⟩ := exists_repaired_packing_leave.{uA,uB,uW}
+  obtain ⟨ε₀,n₀,hCap,hε₀,hPack⟩ := exists_repaired_packing_leave.{uA,uB,uW}
     η ζ hη hηone hζ
-  refine ⟨ε₀,n₀,hε₀,?_⟩
+  refine ⟨ε₀,n₀,hCap,hε₀,?_⟩
   intro n hn A B W _ _ _ E P Q U R G GU H ξ s ε hξ hs hRound hε₀' hR hG hUdeg hRdeg hSmall hA hB hW hAB hBA
     hε hAW hBW hWA hWB hThreshold hRepair
   have hGU : GU ⊆ G := inter_subset_left

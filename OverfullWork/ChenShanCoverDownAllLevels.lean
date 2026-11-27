@@ -138,7 +138,7 @@ theorem exists_all_levels_cover_down_packing
     {η η₀ μ ζ ξ : ℝ} (hρ : 0 < ρ) (hρsmall : ρ ≤ 1/4)
     (hη₀ : 0 < η₀) (hη₀small : η₀ ≤ 1/80) (hEta : 40*η₀ ≤ η) (hηhalf : η ≤ 1/2)
     (hμ : 0 < μ) (hμsmall : 10*μ ≤ 1) (hζ : 0 < ζ) (hξ : 0 < ξ) :
-    ∃ cap : ℝ, ∃ n₀ N₀ : ℕ, 0 < cap ∧
+    ∃ cap : ℝ, ∃ n₀ N₀ : ℕ, cap = coverDownPackingCap (η/2/2) ∧ 0 < cap ∧
     ∀ (S : NestedTripartitePrefixes A B W ρ m k l)
       (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop) (ε : ℝ)
       (Abs : TripartiteArcSet A B W),
@@ -154,10 +154,10 @@ theorem exists_all_levels_cover_down_packing
       L ⊆ G \ Abs ∧ L ⊆ G ∩ (S.vertices l ×ˢ S.vertices l) ∧ ArcBalanced L ∧
       (↑T : Set (Finset (OrientedTripartiteEdge A B W))).PairwiseDisjoint id ∧
       (∀ t ∈ T, IsCoverDownTriangle t) ∧ coveredEdges T = (G \ Abs) \ L := by
-  obtain ⟨cap,n₀,N₀,hCap,hRound⟩ := exists_cover_down_transition
+  obtain ⟨cap,n₀,N₀,hPackingCap,hCap,hRound⟩ := exists_cover_down_transition
     (A := A) (B := B) (W := W) (m := m) (k := k) (l := l)
     hρ hρsmall hη₀ hη₀small hEta hηhalf hμ hμsmall hζ
-  refine ⟨cap,n₀,N₀,hCap,?_⟩
+  refine ⟨cap,n₀,N₀,hPackingCap,hCap,?_⟩
   intro S E P Q ε Abs G δ hm hk hW hε hDense hLower hUpper hSample hLevels hAbs hAbsDisj hAbsBal hAbsDeg
   let β : ℝ := 20*μ/ρ
   let initial := G \ Abs

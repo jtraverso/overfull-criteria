@@ -13,12 +13,16 @@ open scoped Classical
 
 universe uA uB uW
 
+/-- The density tolerance in the proof of Lemma 4.10. -/
+noncomputable def coverDownPackingCap (η : ℝ) : ℝ :=
+  min η (1/(32*(2+10/η)))
+
 /-- Chen–Shan, Lemma 4.10. Under the density and balance hypotheses of
 Lemma 4.8, an edge-disjoint triangle packing leaves a locally balanced
 graph of maximum degree at most ζm. -/
-theorem exists_triangle_packing_with_small_balanced_leave (η ζ : ℝ)
+theorem exists_triangle_packing_with_explicit_cap (η ζ : ℝ)
     (hη : 0 < η) (hηhalf : η < 1/2) (hζ : 0 < ζ) :
-    ∃ ε₀ : ℝ, ∃ m₀ : ℕ, 0 < ε₀ ∧ ∀ (m : ℕ), m₀ ≤ m →
+    ∃ ε₀ : ℝ, ∃ m₀ : ℕ, ε₀ = coverDownPackingCap η ∧ 0 < ε₀ ∧ ∀ (m : ℕ), m₀ ≤ m →
     ∀ (A : Type uA) (B : Type uB) (W : Type uW) [Fintype A] [Fintype B] [Fintype W]
       (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop) (ε : ℝ),
       0 ≤ ε → ε ≤ ε₀ → DenseTripartite E L R m η ε →
@@ -32,7 +36,7 @@ theorem exists_triangle_packing_with_small_balanced_leave (η ζ : ℝ)
   obtain ⟨D,hD⟩ := eventually_atTop.mp (eventually_triangle_packing_bounds Δ₀ ζ hζ)
   obtain ⟨mBounds,hmBounds⟩ := exists_nat_gt (6 * max (1 : ℝ) D)
   refine ⟨min η (1/(32*(2+10/η))),max mSample (max mBounds 1),
-    lt_min hη (by positivity),?_⟩
+    rfl,lt_min hη (by positivity),?_⟩
   intro m hm A B W _ _ _ E L R ε hε₀ hε hDense
   have hmSample : mSample ≤ m := (le_max_left _ _).trans hm
   have hmB : mBounds ≤ m := (le_max_left _ _).trans ((le_max_right _ _).trans hm)
@@ -98,5 +102,23 @@ theorem exists_triangle_packing_with_small_balanced_leave (η ζ : ℝ)
       mul_le_mul_of_nonneg_left (hDegrees v).2 hLossNN
     _ = (4 * (Δ ^ (-(1/900) : ℝ) + 2*d ^ (-(1/3) : ℝ))) * m := by ring
     _ ≤ _ := mul_le_mul_of_nonneg_right hLoss (Nat.cast_nonneg _)
+
+/-- Chen–Shan, Lemma 4.10. Under the density and balance hypotheses of
+Lemma 4.8, an edge-disjoint triangle packing leaves a locally balanced
+graph of maximum degree at most ζm. -/
+theorem exists_triangle_packing_with_small_balanced_leave (η ζ : ℝ)
+    (hη : 0 < η) (hηhalf : η < 1/2) (hζ : 0 < ζ) :
+    ∃ ε₀ : ℝ, ∃ m₀ : ℕ, 0 < ε₀ ∧ ∀ (m : ℕ), m₀ ≤ m →
+    ∀ (A : Type uA) (B : Type uB) (W : Type uW) [Fintype A] [Fintype B] [Fintype W]
+      (E : A → B → Prop) (L : A → W → Prop) (R : B → W → Prop) (ε : ℝ),
+      0 ≤ ε → ε ≤ ε₀ → DenseTripartite E L R m η ε →
+      ∃ T ⊆ supportedTriangles E L R,
+        (↑(triangleHypergraph T) : Set (Finset (OrientedTripartiteEdge A B W))).PairwiseDisjoint id ∧
+        ArcBalanced (packingLeave (tripartiteArcs E L R) (triangleHypergraph T)) ∧
+        ∀ v, (incidentDegree (packingLeave (tripartiteArcs E L R) (triangleHypergraph T)) v : ℝ)
+          ≤ ζ * m := by
+  obtain ⟨ε₀,m₀,_,hε₀,hPack⟩ :=
+    exists_triangle_packing_with_explicit_cap.{uA,uB,uW} η ζ hη hηhalf hζ
+  exact ⟨ε₀,m₀,hε₀,hPack⟩
 
 end OverfullWork.ChenShan

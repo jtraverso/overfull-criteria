@@ -23,7 +23,7 @@ theorem exists_cover_down_transition
     {η η₀ μ ζ : ℝ} (hρ : 0 < ρ) (hρsmall : ρ ≤ 1/4)
     (hη₀ : 0 < η₀) (hη₀small : η₀ ≤ 1/80) (hEta : 40*η₀ ≤ η) (hηhalf : η ≤ 1/2)
     (hμ : 0 < μ) (hμsmall : 10*μ ≤ 1) (hζ : 0 < ζ) :
-    ∃ ε₀ : ℝ, ∃ n₀ N₀ : ℕ, 0 < ε₀ ∧
+    ∃ ε₀ : ℝ, ∃ n₀ N₀ : ℕ, ε₀ = coverDownPackingCap (η/2/2) ∧ 0 < ε₀ ∧
     ∀ (S : NestedTripartitePrefixes A B W ρ m k l) (i N : ℕ), i+1 ≤ l →
     ∀ (E : A → B → Prop) (P : A → W → Prop) (Q : B → W → Prop) (δ ξ : ℝ),
     let n := nestedCoreSize ρ m i
@@ -58,12 +58,12 @@ theorem exists_cover_down_transition
   have hη : 0 < η := by linarith only [hEta,hη₀]
   have hρone : ρ ≤ 1 := by linarith only [hρsmall]
   have hμcap : μ < 1/4 := by linarith only [hμsmall]
-  obtain ⟨ε₀,n₀,hε₀,hCut⟩ := exists_concrete_cover_down_leave
+  obtain ⟨ε₀,n₀,hPackingCap,hε₀,hCut⟩ := exists_concrete_cover_down_leave
     (A := A) (B := B) (W := W) (ρ := ρ) (m := m) (k := k) (l := l) η ζ hη hηhalf hζ
   obtain ⟨N₀,hAfter⟩ := exists_cover_down_transition_after_cut
     (A := A) (B := B) (W := W) (ρ := ρ) (m := m) (k := k) (l := l)
     hρ hρone hμ hμsmall hη₀.le
-  refine ⟨ε₀,n₀,N₀,hε₀,?_⟩
+  refine ⟨ε₀,n₀,N₀,hPackingCap,hε₀,?_⟩
   intro S i N hi E P Q δ ξ n s U X K G GU ε hn hN₀ hm hδ hξ hInit hδn
     hDensity hRatio hηn hMin hClose hξsmall hLarge hRound hMargin hCap hSmall hThreshold hRepair
     hN hNup hU hX hCost hζSmall hExteriorCost hLoadCost hProtect hb hSupport hBal hInterior
