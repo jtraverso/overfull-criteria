@@ -61,7 +61,9 @@ universe u
 
 section Tripartite
 
-variable {A B W : Type*}
+universe uA uB uW
+
+variable {A : Type uA} {B : Type uB} {W : Type uW}
 
 structure TripartiteTriangleDecomposition (E : A → B → Prop) (left : A → W → Prop)
     (right : B → W → Prop) where
