@@ -227,17 +227,18 @@ theorem sampled_block_capacity_lower_tail {E Z : Type*} [Fintype E]
   exact capacity_tail_arithmetic p fraction a m hp hf hm
 
 
-/-- A finite family of bad tests whose probability bounds sum to less
-than one can be avoided by a single choice of all the parts. -/
-theorem exists_block_sample_avoiding {J : Type*} [Fintype J]
-    (s : I → ℕ) (hs : ∀ i, s i ≤ Fintype.card (V i))
-    (bad : J → BlockParts (V := V) s → Prop) (risk : J → ℝ)
-    (hRisk : ∀ j, blockMean (blockPartsMass s) (fun t => eventIndicator (bad j t)) ≤ risk j)
+
+/-- A finite law has an outcome avoiding a family of tests whenever
+the sum of their failure bounds is strictly below one. -/
+theorem exists_finite_outcome_avoiding {Ω J : Type*} [Fintype Ω] [Fintype J]
+    (mass : Ω → ℝ) (hNonneg : ∀ t, 0 ≤ mass t) (hTotal : (∑ t, mass t) = 1)
+    (bad : J → Ω → Prop) (risk : J → ℝ)
+    (hRisk : ∀ j, blockMean mass (fun t => eventIndicator (bad j t)) ≤ risk j)
     (hSum : (∑ j, risk j) < 1) :
     ∃ t, ∀ j, ¬ bad j t := by
   classical
   by_contra! hBad
-  have hPoint (t : BlockParts (V := V) s) : 1 ≤ ∑ j, eventIndicator (bad j t) := by
+  have hPoint (t : Ω) : 1 ≤ ∑ j, eventIndicator (bad j t) := by
     obtain ⟨j,hj⟩ := hBad t
     have h := single_le_sum (s := (univ : Finset J))
       (f := fun k => eventIndicator (bad k t)) (by
@@ -245,14 +246,23 @@ theorem exists_block_sample_avoiding {J : Type*} [Fintype J]
         unfold eventIndicator
         positivity) (mem_univ j)
     simpa only [eventIndicator, ite_eq_left hj] using h
-  have hMass : 1 ≤ ∑ j, blockMean (blockPartsMass s) (fun t => eventIndicator (bad j t)) := by
+  have hMass : 1 ≤ ∑ j, blockMean mass (fun t => eventIndicator (bad j t)) := by
     simp only [blockMean]
-    rw [sum_comm (s := (univ : Finset J))]
-    rw [← blockPartsMass_sum s hs]
+    rw [sum_comm (s := (univ : Finset J)), ← hTotal]
     apply sum_le_sum
     intro t _
-    simpa only [mul_one, Finset.mul_sum] using mul_le_mul_of_nonneg_left (hPoint t) (blockPartsMass_nonneg s t)
+    simpa only [mul_one, Finset.mul_sum] using mul_le_mul_of_nonneg_left (hPoint t) (hNonneg t)
   exact (not_lt_of_ge (hMass.trans (sum_le_sum fun j _ => hRisk j))) hSum
+
+/-- A single choice of all parts can avoid a finite family of tests. -/
+theorem exists_block_sample_avoiding {J : Type*} [Fintype J]
+    (s : I → ℕ) (hs : ∀ i, s i ≤ Fintype.card (V i))
+    (bad : J → BlockParts (V := V) s → Prop) (risk : J → ℝ)
+    (hRisk : ∀ j, blockMean (blockPartsMass s) (fun t => eventIndicator (bad j t)) ≤ risk j)
+    (hSum : (∑ j, risk j) < 1) :
+    ∃ t, ∀ j, ¬ bad j t :=
+  exists_finite_outcome_avoiding (blockPartsMass s) (blockPartsMass_nonneg s)
+    (blockPartsMass_sum s hs) bad risk hRisk hSum
 
 
 /-- Preferred-edge test for an active special vertex, where each
