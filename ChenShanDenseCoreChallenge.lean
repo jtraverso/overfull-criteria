@@ -102,6 +102,14 @@ variable {V : Type*} [Fintype V] [DecidableEq V] {M : MultiGraph V} {k : ℕ}
 def sideCount (C : M.EdgeColoring k) (A : Finset V) (i : Fin k) : ℤ :=
   ∑ v ∈ A, ((C.colourGraph i).degree v : ℤ)
 
+/-- **Chen–Shan, Lemma 3.9.** Start with a proper k-edge-coloring of a finite
+loopless multigraph. Take two disjoint vertex sets A and B with equal degree
+sums. Their complement has even size, and each of its vertices has degree k.
+There is another proper coloring with the same palette in which every color
+meets each outside vertex once and covers equally many vertices of A and B.
+On each side the numbers covered by any two colors differ by at most two.
+The theorem also gives a per-color upper bound, stated after multiplying
+by k. -/
 theorem exists_balanced_equitable_outside_coloring
     (C : M.EdgeColoring k) (A B : Finset V)
     (hAB : Disjoint A B) (hEven : Even ((A ∪ B)ᶜ.card))
@@ -115,6 +123,13 @@ theorem exists_balanced_equitable_outside_coloring
 
 end BalancedColoring
 
+/-- **Chen–Shan, Theorem 4.15.** The two core parts A and B both have size m
+and every core vertex has at least (1/2 + η)m neighbors in the other core
+part. Each vertex has the same number of neighbors in its two opposite
+parts. Each of the pairs between a core part and W misses at most εm neighbors
+at each endpoint. For fixed positive η, sufficiently large m and sufficiently
+small ε, the tripartite graph decomposes into triangles, with every edge
+covered once. -/
 theorem exists_triangle_decomposition_of_dense_tripartite
     (η : ℝ) (hη : 0 < η) :
     ∃ ε₀ : ℝ, ∃ m₀ : ℕ, 0 < ε₀ ∧
@@ -125,6 +140,13 @@ theorem exists_triangle_decomposition_of_dense_tripartite
         Nonempty (TripartiteTriangleDecomposition E P Q) := by
   sorry
 
+/-- **Chen–Shan, Theorem 4.16.** The uncolored edges form a simple bipartite
+graph on two parts of size m with minimum degree at least (1/2 + η)m.
+The other edge copies already have colors and the precoloring is proper.
+The number of precolored copies at any vertex or in any one color is at most
+ε₀m. The combined graph is regular of degree equal to the palette size.
+For fixed positive η, sufficiently large m and a suitable ε₀, the given
+precoloring extends so that each color is incident once at every vertex. -/
 theorem exists_regular_bipartite_precoloring_extension (η : ℝ) (hη : 0 < η) :
     ∃ ε₀ : ℝ, ∃ m₀ : ℕ, 0 < ε₀ ∧
       ∀ m : ℕ, m₀ ≤ m →
@@ -146,6 +168,14 @@ theorem exists_regular_bipartite_precoloring_extension (η : ℝ) (hη : 0 < η)
         (∀ b w, ∃! e : H ⊕ X, Sum.elim (fun p => p.val.2) r e = b ∧ c e = w) := by
   sorry
 
+/-- **Chen–Shan, Theorem 4.2.** Add a loopless auxiliary multigraph M to a
+simple bipartite core with two parts of size m and minimum degree at least
+(1/2 + η)m. Each core vertex has total degree k and at most εm incidences
+from M. The exceptional set has even size and each exceptional vertex has
+degree k in M. The theorem assumes that M already has a proper k-edge-coloring.
+For fixed positive η, sufficiently large m and a suitable ε, the combined
+graph has a 1-factorization. The statement assigns k colors to the original
+edge copies so that every vertex meets each color exactly once. -/
 theorem exists_factorization_of_dense_bipartite_core (η : ℝ) (hη : 0 < η) :
     ∃ ε : ℝ, ∃ m₀ : ℕ, 0 < ε ∧
       ∀ m : ℕ, m₀ ≤ m → ∀ k : ℕ,

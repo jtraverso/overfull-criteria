@@ -3,7 +3,11 @@ version: "v0.4"
 
 project:
   name: "Balanced recoloring and dense-core factorization"
-  description: "Lean formalizations of Lemma 3.9 and Theorems 4.2, 4.15, and 4.16 of Chen and Shan."
+  description: >-
+    Lean formalizations of graph decomposition and edge coloring results of Chen and Shan.
+    They cover balanced and equitable recoloring of multigraphs, triangle decomposition
+    of dense tripartite graphs, extension of sparse precolorings in regular bipartite
+    multigraphs, and 1-factorization for regular multigraphs with a dense bipartite core.
   authors: ["Juan Pablo Traverso Gianini"]
   responsible_maintainers: ["Juan Pablo Traverso Gianini"]
   license: "Apache-2.0"
