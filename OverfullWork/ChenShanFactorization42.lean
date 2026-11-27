@@ -22,17 +22,18 @@ private theorem card_filter_eq_sum_of_zero_one {I : Type*} [Fintype I]
   have h := hf i
   split_ifs <;> omega
 
-private theorem exists_copy_colours_with_incidence {V : Type*} [Fintype V] [DecidableEq V]
+theorem exists_copy_colours_with_incidence {V : Type*} [Fintype V] [DecidableEq V]
     {M : MultiGraph V} {k : ℕ} (D : M.EdgeColoring k) :
     ∃ d : MultiGraph.GeneralCopies.Copies M → Fin k,
-      (∀ v i x y, v ∈ x.1 → v ∈ y.1 → d x = i → d y = i → x = y) ∧
+      ((∀ x, D.col x.1 (d x) = 1) ∧
+        (∀ v i x y, v ∈ x.1 → v ∈ y.1 → d x = i → d y = i → x = y)) ∧
       ∀ v i, (∃ x, v ∈ x.1 ∧ d x = i) ↔ (D.colourGraph i).degree v = 1 := by
   let F : ∀ e : Sym2 V, Fin (M.mult e) ≃ ↥(D.occupiedColours e) := fun e =>
     Fintype.equivOfCardEq (by simp only [Fintype.card_fin,Fintype.card_coe,D.occupiedColours_card])
   let d : MultiGraph.GeneralCopies.Copies M → Fin k := fun x => (F x.1 x.2).val
   have hd (x : MultiGraph.GeneralCopies.Copies M) : D.col x.1 (d x) = 1 :=
     (mem_filter.mp (F x.1 x.2).property).2
-  refine ⟨d,?_,?_⟩
+  refine ⟨d,⟨hd,?_⟩,?_⟩
   · rintro v i ⟨e,x⟩ ⟨f,y⟩ hv hw hc hc'
     have he : 0 < D.col e i := by rw [← hc]; exact (hd ⟨e,x⟩).symm ▸ Nat.zero_lt_one
     have hf : 0 < D.col f i := by rw [← hc']; exact (hd ⟨f,y⟩).symm ▸ Nat.zero_lt_one
@@ -120,7 +121,7 @@ theorem exists_factorization_of_dense_bipartite_core (η : ℝ) (hη : 0 < η) :
   obtain ⟨D,hBalanced,_,hSaturated,hAverage⟩ :=
     exists_balanced_equitable_outside_coloring C S T hST
       (by simpa only [hZ,card_map,card_univ] using hEven) hRegOutside hSums
-  obtain ⟨d₀,hd,hUsed⟩ := exists_copy_colours_with_incidence D
+  obtain ⟨d₀,⟨_,hd⟩,hUsed⟩ := exists_copy_colours_with_incidence D
   let W := ULift.{u} (Fin k)
   let d (x : X) : W := ⟨d₀ x⟩
   let p := fun x : X => (MultiGraph.GeneralCopies.ends M x).1
