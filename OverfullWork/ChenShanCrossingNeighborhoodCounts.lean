@@ -2,6 +2,7 @@ module
 
 public import OverfullWork.ChenShanCrossingNeighborhoodParts
 public import OverfullWork.ChenShanReserveNeighborhoodMean
+import OverfullWork.DenseHall
 import Mathlib.Tactic
 
 @[expose] public section
@@ -27,11 +28,12 @@ theorem exists_crossing_neighborhood_test
       T.card ≤ Z.card ∧
       (∀ e ∈ T, let arc := crossingArcSlotEmbedding S i e
         tripartiteArc F P Q arc.1 arc.2) ∧
-      ∀ sample, count T sample =
-        ((Z.filter (fun z => sampledCrossingAdjacent S i F P Q sample x z ∧ Good z)).card : ℝ) := by
+      (∀ sample, count T sample =
+        ((Z.filter (fun z => sampledCrossingAdjacent S i F P Q sample x z ∧ Good z)).card : ℝ)) ∧
+      T.card = (Z.filter (fun z => tripartiteAdjacent F P Q x z ∧ Good z)).card := by
   obtain ⟨f,hf⟩ := exists_slots_for_outer_neighborhood S i F P Q x hx Z hZ
   let U := univ.filter (fun z : ↥(Z.filter (tripartiteAdjacent F P Q x)) => Good z.1)
-  refine ⟨U.map f,?_,?_,?_⟩
+  refine ⟨U.map f,?_,?_,?_,?_⟩
   · rw [card_map]
     exact (card_filter_le _ _).trans (by rw [card_univ,Fintype.card_coe]; exact card_filter_le _ _)
   · intro e he
@@ -41,6 +43,12 @@ theorem exists_crossing_neighborhood_test
     apply crossing_neighborhood_count_eq_graph
     intro z
     exact ⟨(hf z).1.imp (fun h => Prod.ext h.1 h.2) (fun h => Prod.ext h.1 h.2),(hf z).2⟩
+
+  · dsimp only [U]
+    rw [card_map,DenseHall.subtype_filter_card]
+    congr 1
+    ext z
+    simp only [mem_filter,and_assoc]
 
 /-- The deviation estimate for a protected-prefix test is exactly the
 upper bound on the corresponding neighborhood in (R5). -/
@@ -98,12 +106,13 @@ theorem exists_crossing_reserve_with_neighborhood_counts
       ∀ j, (tests j).card ≤ (Z j).card ∧
         (∀ e ∈ tests j, let arc := crossingArcSlotEmbedding S i e
           tripartiteArc F P Q arc.1 arc.2) ∧
+        (tests j).card = ((Z j).filter (fun z => tripartiteAdjacent F P Q (x j) z ∧ Good j z)).card ∧
         |((Z j).filter (fun z => sampledCrossingAdjacent S i F P Q sample (x j) z ∧ Good j z)).card
           - mean prob (tests j)| ≤ min (ξ*n/2) (μ*n) := by
   dsimp only
   have hTests (j : H) := exists_crossing_neighborhood_test (F := F) (P := P) (Q := Q)
     (x j) (hx j) (Z j) (hZ j) (Good j)
-  choose tests hSize hArc hCount using hTests
+  choose tests hSize hArc hCount hExact using hTests
   let prob := fun e : CyclicEdgeSlot (V := CrossingPart S i) crossingNext => p e.1 e.2.1 e.2.2
   have hBound (j : H) : mean prob (tests j) ≤ 4*μ*nestedCoreSize ρ m i := by
     have hLe : mean prob (tests j) ≤ 2*μ*((tests j).card : ℝ) := by
@@ -117,7 +126,7 @@ theorem exists_crossing_reserve_with_neighborhood_counts
   obtain ⟨sample,hR1,hR3,hs⟩ := exists_crossing_reserve_with_extra_counts
     S i F P Q p tests hμ hξ hρ hρsmall hi hm hK hHalf hn hInit hδ hSmall hRound hBounds
     hBound hExtraCount hLarge hZero hp hMean
-  refine ⟨tests,sample,hR1,hR3,fun j => ⟨hSize j,hArc j,?_⟩⟩
+  refine ⟨tests,sample,hR1,hR3,fun j => ⟨hSize j,hArc j,hExact j,?_⟩⟩
   rw [← hCount j sample]
   exact hs j
 

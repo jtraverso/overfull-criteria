@@ -125,6 +125,9 @@ theorem exists_crossing_reserve_with_concrete_neighborhood_deviations
       (∀ j, (tests j).card ≤ (crossingNeighborhoodTestTarget S i j).card ∧
         (∀ e ∈ tests j, let arc := crossingArcSlotEmbedding S i e
           tripartiteArc F P Q arc.1 arc.2) ∧
+        (tests j).card = ((crossingNeighborhoodTestTarget S i j).filter
+          (fun z => tripartiteAdjacent F P Q (crossingNeighborhoodTestVertex S i j).val z ∧
+            crossingNeighborhoodTestFilter S i F P Q j z)).card ∧
         |((crossingNeighborhoodTestTarget S i j).filter (fun z => sampledCrossingAdjacent S i F P Q sample (crossingNeighborhoodTestVertex S i j).val z ∧ crossingNeighborhoodTestFilter S i F P Q j z)).card
           - mean prob (tests j)| ≤ min (ξ*n/2) (μ*n)) ∧
       ∀ x ∈ X, ∀ c, let V := protectedCrossingPart S i c
@@ -154,7 +157,7 @@ theorem exists_crossing_reserve_with_concrete_neighborhood_deviations
   have hCard : (tests j).card ≤ V.card := (hCounts j).1
   have hProb : ∀ e ∈ tests j, pSlot e ≤ 2*μ := fun e he =>
     (hp e.1 e.2.1 e.2.2 ((hCounts j).2.1 e he)).2.2
-  have hDeviation := (hCounts j).2.2
+  have hDeviation := (hCounts j).2.2.2
   simp only [j,crossingNeighborhoodTestTarget,crossingNeighborhoodTestVertex,
     crossingNeighborhoodTestFilter,and_true] at hDeviation
   have hMeanUpper : mean pSlot (tests j) ≤ 2*μ*((tests j).card : ℝ) := by
