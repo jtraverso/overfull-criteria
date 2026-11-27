@@ -13,24 +13,25 @@ open scoped Classical
 /-- The deterministic mean comparison in (R4). A common neighborhood
 occupying at least half plus 20η of the candidates still occupies more
 than half plus 19η in expectation after weighting the candidates. -/
-theorem reserve_neighborhood_mean_ratio {I : Type*} [Fintype I]
+theorem reserve_neighborhood_mean_ratio_of_card {I : Type*} [Fintype I]
     (p : I → ℝ) (S T : Finset I) {μ η : ℝ}
-    (hS : S.Nonempty) (hT : T ⊆ S)
+    (hS : S.Nonempty)
     (hμ : 0 < μ) (hη : 0 < η) (hηsmall : η ≤ 1/40)
-    (hP : ∀ e ∈ S, |p e-μ| ≤ μ*η/100)
+    (hPS : ∀ e ∈ S, |p e-μ| ≤ μ*η/100)
+    (hPT : ∀ e ∈ T, |p e-μ| ≤ μ*η/100)
     (hCount : (1/2+20*η)*(S.card : ℝ) ≤ T.card) :
     (1/2+19*η)*mean p S < mean p T := by
-  have hPointLo (e : I) (he : e ∈ S) : μ*(1-η/100) ≤ p e := by
-    linarith only [(abs_le.mp (hP e he)).1]
+  have hPointLo (e : I) (he : e ∈ T) : μ*(1-η/100) ≤ p e := by
+    linarith only [(abs_le.mp (hPT e he)).1]
   have hPointHi (e : I) (he : e ∈ S) : p e ≤ μ*(1+η/100) := by
-    linarith only [(abs_le.mp (hP e he)).2]
+    linarith only [(abs_le.mp (hPS e he)).2]
   have hLoWeight : 0 ≤ μ*(1-η/100) := by
     apply mul_nonneg hμ.le
     linarith only [hηsmall]
   have hLo : μ*(1-η/100)*(T.card : ℝ) ≤ mean p T := by
     unfold mean
     rw [mul_comm, ← nsmul_eq_mul, ← sum_const]
-    exact sum_le_sum fun e he => hPointLo e (hT he)
+    exact sum_le_sum hPointLo
   have hHi : mean p S ≤ μ*(1+η/100)*(S.card : ℝ) := by
     unfold mean
     rw [mul_comm (μ*(1+η/100)), ← nsmul_eq_mul, ← sum_const]
@@ -49,6 +50,17 @@ theorem reserve_neighborhood_mean_ratio {I : Type*} [Fintype I]
     _ ≤ μ*(1-η/100)*(T.card : ℝ) := mul_le_mul_of_nonneg_left hCount hLoWeight
     _ ≤ _ := hLo
 
+
+/-- The mean comparison when the good candidates form a subset. -/
+theorem reserve_neighborhood_mean_ratio {I : Type*} [Fintype I]
+    (p : I → ℝ) (S T : Finset I) {μ η : ℝ}
+    (hS : S.Nonempty) (hT : T ⊆ S)
+    (hμ : 0 < μ) (hη : 0 < η) (hηsmall : η ≤ 1/40)
+    (hP : ∀ e ∈ S, |p e-μ| ≤ μ*η/100)
+    (hCount : (1/2+20*η)*(S.card : ℝ) ≤ T.card) :
+    (1/2+19*η)*mean p S < mean p T :=
+  reserve_neighborhood_mean_ratio_of_card p S T hS hμ hη hηsmall hP
+    (fun e he => hP e (hT he)) hCount
 
 /-- Intersecting a large neighborhood with a nearly complete one loses
 at most the missing neighbors. This is the deterministic input to (R3). -/
