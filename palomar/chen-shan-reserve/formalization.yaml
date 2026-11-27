@@ -2,17 +2,16 @@
 version: "v0.4"
 
 project:
-  name: "Balanced reserves and disjoint matching packings"
+  name: "Chen–Shan balanced reserves and disjoint matching packings"
   description: >-
-    Lean formalization of four tools used in Chen and Shan’s proof of
-    the asymptotic overfull result. Signed edge weights realize prescribed
+    Lean formalization of the balanced reserve and matching results in
+    Lemmas 4.11–4.14 of Chen and Shan’s An Asymptotically Sharp Form of the
+    Overfull Conjecture. Signed edge weights realize prescribed
     margins in dense bipartite graphs. These weights yield sampling
     probabilities with balanced expected degrees in cyclic directed
     pairs. Short path deletions restore exact balance in a dense
     tripartite graph, and a matching theorem packs edge-disjoint perfect
-    matchings across overlapping bipartite graphs. The same repository
-    also formalizes edge-coloring criteria of Chen, McDonald, and Shan
-    for robust expanders and for graphs above the half-order degree threshold.
+    matchings across overlapping bipartite graphs.
   authors: ["Juan Pablo Traverso Gianini"]
   responsible_maintainers: ["Juan Pablo Traverso Gianini"]
   license: "Apache-2.0"
