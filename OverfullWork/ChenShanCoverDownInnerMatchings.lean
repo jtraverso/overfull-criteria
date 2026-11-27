@@ -150,7 +150,8 @@ theorem exists_cover_down_round_end
       coveredEdges T = R ∪ M ∧ M ⊆ H ∧
       (∀ v, (incidentDegree M v : ℝ) ≤ bound) ∧
       ArcBalanced (GU \ M) ∧
-      (GU \ M) ∩ (K ×ˢ K) = GU ∩ (K ×ˢ K) := by
+      (GU \ M) ∩ (K ×ˢ K) = GU ∩ (K ×ˢ K) ∧
+      ∀ t ∈ T, IsCoverDownTriangle t := by
   obtain ⟨n₀,hPack⟩ := exists_cover_down_matchings_on_interior.{u} b hb density η hdensity hOne
   refine ⟨n₀,?_⟩
   intro n hn V _ U X K GU R bound F G H hU hX hK hXU hGU hCross hAsymm hBal
@@ -199,11 +200,11 @@ theorem exists_cover_down_round_end
     intro e he
     obtain ⟨x,_,hx⟩ := mem_biUnion.mp he
     exact hInside x hx
-  have ⟨hT,hCov,_,hPr,hBudget,hNext⟩ := matching_stars_cover_round X GU R F G f
+  have ⟨hT,hCov,_,hPr,hBudget,hNext,hTri⟩ := matching_stars_cover_round X GU R F G f
     (fun _ => rfl) (fun _ => rfl)
     (fun x hx => hout x ((hSub x).1 hx)) (fun x hx => hout x ((hSub x).2 hx))
     hDisj hXR hRDisj hBal (fun x => (hInside x).trans sdiff_subset) hPair K hProtect bound hLoad
-  refine ⟨T,M,hT,hCov,hM,hBudget,hNext,?_⟩
+  refine ⟨T,M,hT,hCov,hM,hBudget,hNext,?_,hTri⟩
   ext e
   have he : e ∈ K ×ˢ K → e ∉ M := fun hk hm => disjoint_left.mp hPr hm hk
   simp only [mem_inter,mem_sdiff]

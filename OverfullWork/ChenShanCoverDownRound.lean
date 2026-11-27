@@ -219,7 +219,8 @@ theorem exists_concrete_round_matching_end
       (↑T : Set (Finset (OrientedTripartiteEdge A B W))).PairwiseDisjoint id ∧
       coveredEdges T = R' ∪ M ∧ M ⊆ GU \ (K ×ˢ K) ∧
       (∀ v, (incidentDegree M v : ℝ) ≤ 20*μ*n) ∧
-      ArcBalanced (GU \ M) ∧ (GU \ M) ∩ (K ×ˢ K) = GU ∩ (K ×ˢ K) := by
+      ArcBalanced (GU \ M) ∧ (GU \ M) ∩ (K ×ˢ K) = GU ∩ (K ×ˢ K) ∧
+      ∀ t ∈ T, IsCoverDownTriangle t := by
   let b : ℕ := ⌈10/ρ⌉₊
   have hb : 0 < b := by
     have h : (10:ℝ)/ρ ≤ b := Nat.le_ceil _
@@ -320,8 +321,8 @@ theorem exists_concrete_round_matching_end
       have hv := hLoad' v
       convert hv using 1 <;> congr 2 <;> ext z <;>
         simp only [F,G,mem_filter,mem_union]) hCountLoad
-  obtain ⟨T,M,hT,hCov,hM,hDegree,hNext,hKeep⟩ := h
-  refine ⟨T,M,hT,?_,?_,hDegree,?_,?_⟩
+  obtain ⟨T,M,hT,hCov,hM,hDegree,hNext,hKeep,hTri⟩ := h
+  refine ⟨T,M,hT,?_,?_,hDegree,?_,?_,hTri⟩
   · convert hCov using 1
     ext e
     simp only [mem_union]

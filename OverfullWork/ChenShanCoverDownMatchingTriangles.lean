@@ -143,6 +143,10 @@ theorem directedMatchingArcs_degree {F G : Finset V} (f : ↥F ≃ ↥G)
     · exact hv (mem_union_left _ (h ▸ a.property))
     · exact hv (mem_union_right _ (h ▸ (f a).property))
 
+/-- A set consisting of the three arcs of a directed triangle. -/
+def IsCoverDownTriangle (T : Finset (V × V)) : Prop :=
+  ∃ a b c : V, a ≠ b ∧ b ≠ c ∧ c ≠ a ∧ T = exteriorTriangle (a,b) c
+
 /-- Glue the matching triangles at all exterior vertices. Their edges
 are exactly the updated crossing reserve and the interior matching
 arcs, and their removal preserves the remaining graph's balance. -/
@@ -164,7 +168,8 @@ theorem matching_stars_cover_round [Fintype V]
     let M := (univ : Finset ↥X).biUnion (fun x => directedMatchingArcs (f x))
     (↑T : Set (Finset (V × V))).PairwiseDisjoint id ∧
     coveredEdges T = R ∪ M ∧ M ⊆ GU ∧ Disjoint M (K ×ˢ K) ∧
-    (∀ v, (incidentDegree M v : ℝ) ≤ bound) ∧ ArcBalanced (GU \ M) := by
+    (∀ v, (incidentDegree M v : ℝ) ≤ bound) ∧ ArcBalanced (GU \ M) ∧
+    ∀ t ∈ T, IsCoverDownTriangle t := by
   intro T M
   let stars (x : ↥X) := matchingStarTriangles x.val (f x)
   let matchedArcs (x : ↥X) := directedMatchingArcs (f x)
@@ -290,8 +295,18 @@ theorem matching_stars_cover_round [Fintype V]
     rw [hCov]
     exact union_subset (fun e he => mem_union_right _ he)
       (fun e he => mem_union_left _ (hM he))
-  refine ⟨hPair,hCov,hM,hPr,hBound,?_⟩
-  rw [← hDiff]
-  exact arcBalanced_sdiff hSub hBal hPacked
+  refine ⟨hPair,hCov,hM,hPr,hBound,?_,?_⟩
+  · rw [← hDiff]
+    exact arcBalanced_sdiff hSub hBal hPacked
+  · intro t ht
+    obtain ⟨x,_,hx⟩ := mem_biUnion.mp ht
+    obtain ⟨a,_,rfl⟩ := mem_image.mp hx
+    refine ⟨x.val,a.val,(f x a).val,?_,?_,?_,rfl⟩
+    · intro he
+      exact hNoF x (by rw [he]; exact a.property)
+    · intro he
+      exact disjoint_left.mp (hDisj x) a.property (by rw [he]; exact (f x a).property)
+    · intro he
+      exact hNoG x (by rw [← he]; exact (f x a).property)
 
 end OverfullWork.ChenShan
