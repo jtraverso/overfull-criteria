@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Balanced recoloring and dense-core factorization"
+  description: "Lean formalizations of Lemma 3.9 and Theorems 4.2, 4.15, and 4.16 of Chen and Shan."
+  authors: ["Juan Pablo Traverso Gianini"]
+  responsible_maintainers: ["Juan Pablo Traverso Gianini"]
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C15", "05C35", "05C70", "68V20"]
+
+sources:
+  - title: "An Asymptotically Sharp Form of the Overfull Conjecture"
+    authors: ["Guantao Chen", "Songling Shan"]
+    id: "arXiv:2611.32763v1"
+    location: "Lemma 3.9, Theorem 4.2, and Theorems 4.15 and 4.16."
+    relationship: formalizes
+
+status:
+  scope: "Balanced and equitable multigraph recoloring, dense tripartite triangle decomposition, precoloring extension, and dense bipartite core factorization."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["OpenAI GPT-6"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4.35.0-rc3, Mathlib, Lake Comparator, and axiom audits."
+  spend_usd: "not tracked"
+  notes: "The Lean development and packaging were AI-assisted under human direction."
+
+fidelity:
+  divergences: "Lemma 3.9 counts endpoint incidences through degrees in the individual colors and uses two finite minimizations. Theorems 4.15 and 4.16 quantify the thresholds before choosing the graph. Theorem 4.2 uses the available endpoint sets directly in place of constructing auxiliary matchings and records the factorization on the original indexed edge copies."
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "One independent Mathlib-only challenge contains all four statements. The Lean kernel reports only propext, Classical.choice, and Quot.sound for each solution declaration."
+
+alignment:
+  namespace: "OverfullWork.ChenShan"
+  statements:
+    - source: "Lemma 3.9"
+      lean: "OverfullWork.ChenShan.exists_balanced_equitable_outside_coloring"
+      module: "OverfullWork.ChenShanLemma39"
+      status: "formalized"
+    - source: "Theorem 4.15"
+      lean: "OverfullWork.ChenShan.exists_triangle_decomposition_of_dense_tripartite"
+      module: "OverfullWork.ChenShanTheorem415"
+      status: "formalized"
+    - source: "Theorem 4.16"
+      lean: "OverfullWork.ChenShan.exists_regular_bipartite_precoloring_extension"
+      module: "OverfullWork.ChenShanTheorem416"
+      status: "formalized"
+    - source: "Theorem 4.2"
+      lean: "OverfullWork.ChenShan.exists_factorization_of_dense_bipartite_core"
+      module: "OverfullWork.ChenShanFactorization42"
+      status: "formalized"
+
+acknowledgements: "Lean and Mathlib, and the authors of the mathematical source."

@@ -1,0 +1,27 @@
+{
+  "challenge_module": "ChenShanDenseCoreChallenge",
+  "solution_module": "ChenShanDenseCoreSolution",
+  "theorem_names": [
+    "OverfullWork.ChenShan.exists_balanced_equitable_outside_coloring",
+    "OverfullWork.ChenShan.exists_triangle_decomposition_of_dense_tripartite",
+    "OverfullWork.ChenShan.exists_regular_bipartite_precoloring_extension",
+    "OverfullWork.ChenShan.exists_factorization_of_dense_bipartite_core"
+  ],
+  "definition_names": [
+    "SimpleGraph.MultiGraph",
+    "SimpleGraph.MultiGraph.degree",
+    "SimpleGraph.MultiGraph.EdgeColoring",
+    "SimpleGraph.MultiGraph.EdgeColoring.colourGraph",
+    "SimpleGraph.MultiGraph.GeneralCopies.Copies",
+    "OverfullWork.ChenShan.sideCount",
+    "OverfullWork.ChenShan.TripartiteLocallyBalanced",
+    "OverfullWork.ChenShan.TripartiteTriangleDecomposition",
+    "OverfullWork.ChenShan.DenseTripartite"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}
