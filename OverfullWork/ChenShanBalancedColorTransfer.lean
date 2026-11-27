@@ -1,7 +1,7 @@
 module
 
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import OverfullWork.EquitableComponents
+public import OverfullWork.EquitableRecolouring
 import Mathlib.Tactic
 
 @[expose] public section
@@ -174,5 +174,97 @@ theorem component_side_contributions
       omega
     · rw [abs_of_neg (lt_of_not_ge hy)] at hSize
       omega
+
+
+variable {V : Type*} [Fintype V] [DecidableEq V] {M : MultiGraph V} {k : ℕ}
+
+/-- Sum a vertex statistic over its bicolored components, restricted to
+one side of the core. -/
+theorem sum_component_side (C : M.EdgeColoring k) (a b : Fin k) (A : Finset V)
+    (f : V → ℤ) :
+    (∑ z : (C.twoColourGraph a b).ConnectedComponent,
+      ∑ v ∈ A ∩ C.componentSet a b z, f v) = ∑ v ∈ A, f v := by
+  have hEq (z) : A ∩ C.componentSet a b z =
+      A.filter (fun v => (C.twoColourGraph a b).connectedComponentMk v = z) := by
+    ext
+    simp [MultiGraph.EdgeColoring.componentSet,ConnectedComponent.mem_supp_iff]
+  simp_rw [hEq,sum_filter]
+  rw [sum_comm]
+  apply sum_congr rfl
+  intro v _
+  rw [sum_eq_single ((C.twoColourGraph a b).connectedComponentMk v)]
+  · simp
+  · intro z _ hne
+    simp [hne.symm]
+  · simp
+
+/-- If a color has more left-right imbalance than a second color, a
+single component contributes a transfer of two to their imbalance. -/
+theorem exists_component_imbalance_transfer
+    (C : M.EdgeColoring k) (a b : Fin k) (A B : Finset V) (hAB : Disjoint A B)
+    (hSat : ∀ v, v ∉ A → v ∉ B → (C.colourGraph a).degree v = (C.colourGraph b).degree v)
+    (hDiff : (∑ v ∈ B, (((C.colourGraph a).degree v : ℤ) - (C.colourGraph b).degree v)) <
+      (∑ v ∈ A, (((C.colourGraph a).degree v : ℤ) - (C.colourGraph b).degree v))) :
+    let diff (v : V) := ((C.colourGraph a).degree v : ℤ) - (C.colourGraph b).degree v
+    ∃ z : (C.twoColourGraph a b).ConnectedComponent,
+      (∑ v ∈ A ∩ C.componentSet a b z, diff v) -
+      (∑ v ∈ B ∩ C.componentSet a b z, diff v) = 2 := by
+  intro diff
+  by_contra! h
+  have hNonpos : (∑ z : (C.twoColourGraph a b).ConnectedComponent,
+      ((∑ v ∈ A ∩ C.componentSet a b z, diff v) -
+      (∑ v ∈ B ∩ C.componentSet a b z, diff v))) ≤ 0 := by
+    apply sum_nonpos
+    intro z _
+    have hCases := component_side_contributions C a b z A B hAB hSat
+    dsimp only at hCases
+    have hn := h z
+    rcases hCases with h₀|h₀|h₀|h₀|h₀|h₀|h₀|h₀|h₀ <;>
+      obtain ⟨hx,hy⟩ := h₀ <;> change
+        (∑ v ∈ A ∩ C.componentSet a b z, diff v) = _ at hx <;> change
+        (∑ v ∈ B ∩ C.componentSet a b z, diff v) = _ at hy <;> omega
+  rw [sum_sub_distrib,sum_component_side,sum_component_side] at hNonpos
+  change (∑ v ∈ B, diff v) < (∑ v ∈ A, diff v) at hDiff
+  linarith only [hDiff,hNonpos]
+
+/-- Effect of swapping the colors on any closed union of components.
+The equality holds vertex by vertex, including parallel edge copies. -/
+theorem swap_closed_colour_degree
+    (C : M.EdgeColoring k) (a b i : Fin k) (S : Finset V)
+    (hclosed : ∀ u v, 0 < C.col s(u,v) a + C.col s(u,v) b → (u ∈ S ↔ v ∈ S))
+    (v : V) :
+    ((C.swapClosed a b S hclosed).colourGraph i).degree v =
+      if v ∈ S then (C.colourGraph (Equiv.swap a b i)).degree v
+      else (C.colourGraph i).degree v := by
+  simp only [MultiGraph.degree,MultiGraph.EdgeColoring.colourGraph]
+  by_cases hv : v ∈ S
+  · rw [ite_eq_left hv]
+    apply sum_congr rfl
+    intro e he
+    simpa only [ite_eq_left hv,MultiGraph.EdgeColoring.swapClosed] using C.swappedCol_incident a b S hclosed e v (mem_filter.mp he).2 i
+  · rw [ite_eq_right hv]
+    apply sum_congr rfl
+    intro e he
+    simpa only [ite_eq_right hv,MultiGraph.EdgeColoring.swapClosed] using C.swappedCol_incident a b S hclosed e v (mem_filter.mp he).2 i
+
+
+/-- On a core side, the transferred count is the signed contribution
+from the intersection with the vertices whose colors are swapped. -/
+theorem swap_closed_side_degree
+    (C : M.EdgeColoring k) (a b i : Fin k) (S A : Finset V)
+    (hclosed : ∀ u v, 0 < C.col s(u,v) a + C.col s(u,v) b → (u ∈ S ↔ v ∈ S)) :
+    (∑ v ∈ A, (((C.swapClosed a b S hclosed).colourGraph i).degree v : ℤ)) =
+      (∑ v ∈ A, ((C.colourGraph i).degree v : ℤ)) +
+      ∑ v ∈ A ∩ S, (((C.colourGraph (Equiv.swap a b i)).degree v : ℤ) -
+        (C.colourGraph i).degree v) := by
+  have hAS : A ∩ S = A.filter (· ∈ S) := by ext; simp
+  rw [hAS,sum_filter,← sum_add_distrib]
+  apply sum_congr rfl
+  intro v _
+  rw [swap_closed_colour_degree]
+  by_cases hv : v ∈ S
+  · rw [ite_eq_left hv,ite_eq_left hv]
+    omega
+  · rw [ite_eq_right hv,ite_eq_right hv,add_zero]
 
 end OverfullWork.ChenShan
