@@ -138,6 +138,44 @@ theorem exists_disjoint_palettes_with_incidence
 
 universe u
 
+/-- For fixed positive incidence and palette fractions, an arbitrary
+positive part of the failure budget can be reserved for these tests. -/
+theorem exists_palette_incidence_risk_threshold (p : ℕ) (C θ δ ε : ℝ)
+    (hC : 0 ≤ C) (hθ : 0 < θ) (hδ : 0 < δ) (hε : 0 < ε) :
+    ∃ N : ℕ, ∀ k : ℕ, N ≤ k →
+    ∀ {I V : Type u} [Fintype I] [Fintype V],
+      Fintype.card I ≤ p → (Fintype.card V:ℝ) ≤ C*k →
+      ∀ s : I → ℕ, (∀ i, δ*k ≤ (s i:ℝ)) →
+      (∑ i : I × V, 2*exp (-((θ/32)^2*(s i.1:ℝ))/4)) < ε := by
+  let γ : ℝ := (θ/32)^2*δ/4
+  have hγ : 0 < γ := by dsimp [γ]; positivity
+  obtain ⟨N,hN⟩ := exists_nested_sampling_budget (2*(p:ℝ)*C) γ ε (by positivity) hγ hε
+  refine ⟨N,?_⟩
+  intro k hk I V _ _ hI hV s hFrac
+  have hMain : (2*(p:ℝ)*C)*(k:ℝ)*exp (-γ*k) < ε := by
+    simpa only [sum_singleton] using hN {k} (by
+      intro n hn
+      rw [mem_singleton.mp hn]
+      exact hk)
+  have hCard : (Fintype.card (I × V):ℝ) ≤ (p:ℝ)*C*k := by
+    rw [Fintype.card_prod,Nat.cast_mul,mul_assoc]
+    exact mul_le_mul (by exact_mod_cast hI) hV (Nat.cast_nonneg _) (Nat.cast_nonneg _)
+  apply lt_of_le_of_lt _ hMain
+  calc
+    _ ≤ ∑ _i : I × V, 2*exp (-γ*k) := by
+      apply sum_le_sum
+      intro i _
+      apply mul_le_mul_of_nonneg_left _ (by norm_num)
+      apply exp_le_exp.mpr
+      have h := mul_le_mul_of_nonneg_left (hFrac i.1)
+        (show 0 ≤ (θ/32)^2 by positivity)
+      dsimp only [γ]
+      nlinarith only [h]
+    _ = (Fintype.card (I × V):ℝ)*(2*exp (-γ*k)) := by simp
+    _ ≤ _ := by
+      have h := mul_le_mul_of_nonneg_right hCard (show 0 ≤ 2*exp (-γ*k) by positivity)
+      nlinarith only [h]
+
 /-- Uniform-order form of (5.3). The numbers of palettes and active
 vertices may be bounded by a constant and a linear function of k.
 The minimum palette fraction and the active threshold determine the
@@ -158,36 +196,12 @@ theorem exists_palette_incidence_threshold (p : ℕ) (C θ δ : ℝ)
         Pairwise (fun i j => Disjoint (P i) (P j)) ∧
         ∀ i v, (15/16 : ℝ)*((s i:ℝ)/k)*c v ≤ ((A v ∩ P i).card:ℝ) ∧
           ((A v ∩ P i).card:ℝ) ≤ 2*((s i:ℝ)/k)*c v := by
-  let γ : ℝ := (θ/32)^2*δ/4
-  have hγ : 0 < γ := by dsimp [γ]; positivity
-  obtain ⟨N,hN⟩ := exists_nested_sampling_budget (2*(p:ℝ)*C) γ 1 (by positivity) hγ (by norm_num)
+  obtain ⟨N,hN⟩ := exists_palette_incidence_risk_threshold.{u} p C θ δ 1
+    hC hθ hδ (by norm_num)
   refine ⟨max N 1,?_⟩
   intro k hk W I V _ _ _ hI hV hWlo hWhi s c A hSlots hFrac hActive hAvailable hTotal
   have hk₀ : 0 < k := (le_max_right N 1).trans hk
-  apply exists_disjoint_palettes_with_incidence s hSlots k hk₀ θ hθ hθ₁ hWlo hWhi
-    c A hActive hAvailable hTotal
-  have hMain : (2*(p:ℝ)*C)*(k:ℝ)*exp (-γ*k) < 1 := by
-    simpa only [sum_singleton] using hN {k} (by
-      intro n hn
-      rw [mem_singleton.mp hn]
-      exact (le_max_left N 1).trans hk)
-  have hCard : (Fintype.card (I × V):ℝ) ≤ (p:ℝ)*C*k := by
-    rw [Fintype.card_prod,Nat.cast_mul,mul_assoc]
-    exact mul_le_mul (by exact_mod_cast hI) hV (Nat.cast_nonneg _) (Nat.cast_nonneg _)
-  apply lt_of_le_of_lt _ hMain
-  calc
-    _ ≤ ∑ _i : I × V, 2*exp (-γ*k) := by
-      apply sum_le_sum
-      intro i _
-      apply mul_le_mul_of_nonneg_left _ (by norm_num)
-      apply exp_le_exp.mpr
-      have h := mul_le_mul_of_nonneg_left (hFrac i.1)
-        (show 0 ≤ (θ/32)^2 by positivity)
-      dsimp only [γ]
-      nlinarith only [h]
-    _ = (Fintype.card (I × V):ℝ)*(2*exp (-γ*k)) := by simp
-    _ ≤ _ := by
-      have h := mul_le_mul_of_nonneg_right hCard (show 0 ≤ 2*exp (-γ*k) by positivity)
-      nlinarith only [h]
+  exact exists_disjoint_palettes_with_incidence s hSlots k hk₀ θ hθ hθ₁ hWlo hWhi
+    c A hActive hAvailable hTotal (hN k ((le_max_left N 1).trans hk) hI hV s hFrac)
 
 end OverfullWork.ChenShan
