@@ -264,7 +264,7 @@ theorem subsetInsertion_sum_vertex (U : Finset V) (r : ℕ) (f : V → ℝ) :
 noncomputable def uniformBlockMean {A : Type*} [Fintype A] (f : A → ℝ) : ℝ :=
   blockMean (fun _ => (Fintype.card A : ℝ)⁻¹) f
 
-private theorem uniformBlockMean_eq_div {A : Type*} [Fintype A] (f : A → ℝ) :
+theorem uniformBlockMean_eq_div {A : Type*} [Fintype A] (f : A → ℝ) :
     uniformBlockMean f = (∑ a, f a) / (Fintype.card A : ℝ) := by
   rw [uniformBlockMean, blockMean, ← mul_sum, div_eq_mul_inv, mul_comm]
 
