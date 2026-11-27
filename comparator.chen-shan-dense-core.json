@@ -8,15 +8,11 @@
     "OverfullWork.ChenShan.exists_factorization_of_dense_bipartite_core"
   ],
   "definition_names": [
-    "SimpleGraph.MultiGraph",
     "SimpleGraph.MultiGraph.degree",
-    "SimpleGraph.MultiGraph.EdgeColoring",
     "SimpleGraph.MultiGraph.EdgeColoring.colourGraph",
     "SimpleGraph.MultiGraph.GeneralCopies.Copies",
     "OverfullWork.ChenShan.sideCount",
-    "OverfullWork.ChenShan.TripartiteLocallyBalanced",
-    "OverfullWork.ChenShan.TripartiteTriangleDecomposition",
-    "OverfullWork.ChenShan.DenseTripartite"
+    "OverfullWork.ChenShan.TripartiteLocallyBalanced"
   ],
   "permitted_axioms": [
     "propext",
