@@ -15,7 +15,8 @@ open scoped Classical
 
 namespace SimpleGraph
 
-structure MultiGraph (V : Type*) where
+universe u_2 in
+structure MultiGraph (V : Type u_2) where
   /-- Multiplicidad de cada par no ordenado. -/
   mult : Sym2 V → ℕ
   /-- No hay lazos. -/
