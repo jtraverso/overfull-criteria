@@ -1,6 +1,7 @@
 module
 
 public import OverfullWork.ChenShanBlockPartSampling
+public import OverfullWork.ChenShanSwapVarianceStep
 public import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Tactic
 
@@ -170,5 +171,24 @@ theorem block_capacity_influence_sq_sum (x y : E → V) (S : Finset Z)
   have h := hSq.trans (mul_le_mul_of_nonneg_left hS (mul_nonneg hw₂ ha))
   convert h using 1
   ring
+
+
+/-- Variance of the capacity when only one part is sampled and the
+set of selected vertices outside that sample is held fixed. -/
+theorem block_capacity_fixed_part_variance (x y : E → V) (S : Finset Z)
+    (w : Z → V → ℝ) (cap : Z → ℝ) (w₁ w₂ : ℝ)
+    (P R : Finset V) (s : ℕ) (hs : s ≤ P.card)
+    (hw₁ : 0 ≤ w₁) (hw₂ : 0 ≤ w₂) (hw : ∀ z ∈ S, ∀ v, 0 ≤ w z v) :
+    uniformBlockVariance (fun T : ↥(P.powersetCard s) =>
+      subsetBlockCapacity x y S w cap w₁ w₂ (R ∪ T.val)) ≤
+      4*((s:ℝ)/P.card)*(∑ v ∈ P, (blockCapacityInfluence x y S w w₁ w₂ v)^2) := by
+  classical
+  refine fixed_size_swap_variance P s hs
+    (fun T => subsetBlockCapacity x y S w cap w₁ w₂ (R ∪ T))
+    (blockCapacityInfluence x y S w w₁ w₂) ?_
+  intro T _ u _ v _ huv _ _
+  apply block_capacity_swap_abs_le x y S w cap w₁ w₂ _ _ u v huv hw₁ hw₂ hw
+  intro q hqu hqv
+  simp only [mem_union, mem_insert, hqu, hqv, false_or]
 
 end OverfullWork.ChenShan
