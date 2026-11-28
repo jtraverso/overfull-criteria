@@ -1,87 +1,104 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
-version: "v0.4"
-
+version: v0.4
 project:
-  name: "Towards the Overfull Conjecture II in Lean"
-  description: >-
-    A Lean formalization of the two main theorems of Chen, McDonald, and Shan.
-    Theorem 1.3 proves the overfull criterion for sufficiently large robust
-    expanders with linear maximum degree, weak Vizing adjacency, and few
-    vertices of large degree deficit. Theorem 1.4 gives the criterion for
-    sufficiently large simple graphs whose maximum degree is at least
-    (1 + epsilon) times half the order, for every fixed positive epsilon.
-    The proof includes the reduction to critical graphs, the two stopping
-    routes, and the coloring of the canonical completion.
+  name: Auxiliary completion, triangle absorption, and matching retention
+  description: Lean formalizations of eight structural results of Chen and Shan on graph completion and
+    decomposition. They cover robust realization of degree sequences, regular auxiliary completion, tripartite
+    absorption and fractional and approximate triangle decomposition, bounded signed edge weights in dense
+    bipartite graphs, and retention of prescribed edges in a perfect matching.
   authors:
-    - "Juan Pablo Traverso Gianini"
+  - Juan Pablo Traverso Gianini
   responsible_maintainers:
-    - "Juan Pablo Traverso Gianini"
-  license: "Apache-2.0"
-
+  - Juan Pablo Traverso Gianini
+  license: Apache-2.0
 classification:
-  arxiv: ["math.CO"]
-  msc2020: ["05C15", "05C35", "05C45", "68V20"]
-
+  arxiv:
+  - math.CO
+  msc2020:
+  - 05C35
+  - 05C70
+  - 68V20
 sources:
-  - title: "Towards the Overfull Conjecture II"
-    authors: ["Guantao Chen", "Jessica McDonald", "Songling Shan"]
-    id: "arXiv:2607.02270"
-    location: "Theorems 1.3 and 1.4 of v1, with the reduction and proof in Sections 2–5."
-    relationship: formalizes
-  - title: "On the average degree of edge chromatic critical graphs II"
-    authors: ["Yan Cao", "Guantao Chen"]
-    id: "doi:10.1016/j.jctb.2020.07.007"
-    location: "The asymptotic average-degree estimate used as Lemma 2.4 of Chen–McDonald–Shan."
-    relationship: formalizes
-  - title: "Hamilton decompositions of regular expanders: applications"
-    authors: ["Daniela Kühn", "Deryk Osthus"]
-    id: "arXiv:1203.0659"
-    location: "Theorem 1.2, existence of undirected Hamilton decompositions at even degree."
-    relationship: formalizes
-
+- title: An Asymptotically Sharp Form of the Overfull Conjecture
+  authors:
+  - Guantao Chen
+  - Songling Shan
+  id: arXiv:2611.32763v1
+  location: Lemmas 3.23 and 3.24 and the simple-graph specialization, and Lemmas 4.6, 4.7, 4.8, 4.10,
+    and 5.22.
+  relationship: formalizes
+- title: Pseudorandom hypergraph matchings
+  authors:
+  - Stefan Ehard
+  - Stefan Glock
+  - Felix Joos
+  id: arXiv:1907.09946
+  location: Theorem 1.2, applied in the proof of Chen and Shan's Lemma 4.10.
+  relationship: background
 status:
-  scope: >-
-    The two main theorems are compared independently. The proofs include the
-    canonical completion criterion (Theorem 4.2) and the existence forms of
-    supporting expansion and decomposition results. The scope is the main
-    results of this article and their proof dependencies.
+  scope: Three auxiliary completion statements, four triangle decomposition tools, and one perfect matching
+    retention lemma.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
-
 automation:
   methods:
-    - method: "agent"
-      models: ["OpenAI GPT-6"]
-      framework: "OpenAI Codex"
-      tool_setup: "Lean 4, Mathlib, Lake builds, and axiom audits under author direction."
-  spend_usd: "not tracked"
-  notes: "The Lean development and packaging were AI-assisted under human direction."
-
+  - method: agent
+    models:
+    - OpenAI GPT-6
+    framework: OpenAI Codex
+    tool_setup: Lean 4.35.0-rc3, Mathlib, Lake Comparator, and axiom audits.
+  spend_usd: not tracked
+  notes: The Lean development and packaging were AI-assisted under human direction.
 fidelity:
-  divergences: >-
-    Theorem 1.3 states an explicit existential hierarchy with 0 < tau < 1/2
-    and 0 < etaMax < 1, and a weak inequality in the exceptional-set bound.
-    Theorem 1.4 uses the degree threshold from
-    the article. The proofs use existence forms of auxiliary factorization
-    and decomposition results, and sufficient quantitative versions of
-    regularity, concentration, and degree estimates.
-
+  divergences: Lemma 3.23 is stated for positive delta and tau and applies in the ranges of the article.
+    The completion is on a disjoint sum. Pairwise multiplicity identities express both induced graphs
+    and the simplicity of every added edge. The theorems keep the paper’s deficit, parity, minimum-degree,
+    and overfull-set conditions. Lemma 4.6 orients each tripartite edge once and gives an explicit bound
+    on the common side size. Lemma 4.7 uses the paper's cut inequalities and proves flow feasibility by
+    minimizing squared residual demand and saturating the cut from vertices with positive residual. Lemma
+    4.8 records the explicit threshold and uses a convergent geometric series of corrections. Lemma 4.10
+    uses a two-sided finite Chernoff bound with 1/4 in the exponent and an unrounded real hypergraph degree
+    bound. It imports Theorem 1.2 of Ehard, Glock, and Joos at a pinned commit. Lemma 5.22 uses induced
+    complements and retains the paper's bound of 135720 discarded prescribed edges.
 review:
-  status: "self-assessed"
+  status: self-assessed
   reviewers: []
-  notes: "Challenge states the two main theorems independently of Solution."
-
+  notes: The Challenge imports only Mathlib and documents each of the eight compared statements and its
+    hypotheses.
 alignment:
-  namespace: "OverfullWork"
+  namespace: OverfullWork.ChenShan
   statements:
-    - source: "Chen–McDonald–Shan, Theorem 1.3"
-      lean: "OverfullWork.CMSTrimmingRound.cms_theorem_1_3"
-      module: "OverfullWork.CMSTheorem13"
-      status: "formalized"
-    - source: "Chen–McDonald–Shan, Theorem 1.4"
-      lean: "OverfullWork.Gate8J.cms_theorem_1_4"
-      module: "OverfullWork.CMSTheorem14"
-      status: "formalized"
-
-acknowledgements: "Lean and Mathlib, and the authors of the mathematical sources."
+  - source: Lemma 3.23
+    lean: OverfullWork.ChenShan.exists_robust_graph_with_prescribed_degrees
+    module: OverfullWork.ChenShanCycleRealization
+    status: formalized
+  - source: Lemma 3.24
+    lean: OverfullWork.ChenShan.exists_regular_auxiliary_completion
+    module: OverfullWork.ChenShanMultigraphCompletion
+    status: formalized
+  - source: Simple-graph specialization after Lemma 3.24
+    lean: OverfullWork.ChenShan.exists_simple_auxiliary_completion
+    module: OverfullWork.ChenShanMultigraphCompletion
+    status: formalized
+  - source: Lemma 4.6
+    lean: OverfullWork.ChenShan.exists_universal_tripartite_absorber
+    module: OverfullWork.ChenShanUniversalAbsorber
+    status: formalized
+  - source: Lemma 4.7
+    lean: OverfullWork.ChenShan.exists_bounded_signed_edge_weights
+    module: OverfullWork.ChenShanSignedEdgeWeights
+    status: formalized
+  - source: Lemma 4.8
+    lean: OverfullWork.ChenShan.exists_bounded_fractional_triangle_decomposition
+    module: OverfullWork.ChenShanFractionalDecomposition
+    status: formalized
+  - source: Lemma 4.10
+    lean: OverfullWork.ChenShan.exists_triangle_packing_with_small_balanced_leave
+    module: OverfullWork.ChenShanLemma410
+    status: formalized
+  - source: Lemma 5.22
+    lean: OverfullWork.ChenShan.exists_perfect_matching_retaining_exceptional_core_edges
+    module: OverfullWork.ChenShanMatchingRetention
+    status: formalized
+acknowledgements: Lean and Mathlib, and the authors of the mathematical source.

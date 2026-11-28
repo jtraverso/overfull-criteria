@@ -1,0 +1,46 @@
+{
+  "challenge_module": "ChenShanAuxiliaryAbsorptionChallenge",
+  "solution_module": "ChenShanAuxiliaryAbsorptionSolution",
+  "theorem_names": [
+    "OverfullWork.ChenShan.exists_robust_graph_with_prescribed_degrees",
+    "OverfullWork.ChenShan.exists_regular_auxiliary_completion",
+    "OverfullWork.ChenShan.exists_simple_auxiliary_completion",
+    "OverfullWork.ChenShan.exists_universal_tripartite_absorber",
+    "OverfullWork.ChenShan.exists_bounded_signed_edge_weights",
+    "OverfullWork.ChenShan.exists_bounded_fractional_triangle_decomposition",
+    "OverfullWork.ChenShan.exists_triangle_packing_with_small_balanced_leave",
+    "OverfullWork.ChenShan.exists_perfect_matching_retaining_exceptional_core_edges"
+  ],
+  "definition_names": [
+    "OverfullWork.ChenShan.auxiliaryOrder",
+    "OverfullWork.KLOS.ExpandsInside",
+    "OverfullWork.KLOS.robustNeighbourhoodIn",
+    "OverfullWork.PrunedCore.neighboursIn",
+    "SimpleGraph.MultiGraph.IsRegularOfDegree",
+    "SimpleGraph.MultiGraph.HasOverfullSubset",
+    "SimpleGraph.MultiGraph.degree",
+    "SimpleGraph.MultiGraph.ofSimpleGraph",
+    "OverfullWork.ChenShan.TripartiteVertex",
+    "OverfullWork.ChenShan.tripartiteArc",
+    "OverfullWork.ChenShan.tripartiteArcs",
+    "OverfullWork.ChenShan.TripartiteLocallyBalanced",
+    "OverfullWork.ChenShan.FootprintEdge",
+    "OverfullWork.ChenShan.TriangleSupported",
+    "OverfullWork.ChenShan.triangleBoundary",
+    "OverfullWork.ChenShan.edgeOnes",
+    "OverfullWork.ChenShan.BoundedFractionalTriangleDecomposition",
+    "OverfullWork.ChenShan.triangleEdges",
+    "OverfullWork.ChenShan.triangleHypergraph",
+    "OverfullWork.ChenShan.supportedTriangles",
+    "OverfullWork.ChenShan.ArcBalanced",
+    "OverfullWork.ChenShan.incidentDegree",
+    "OverfullWork.ChenShan.coveredEdges",
+    "OverfullWork.ChenShan.packingLeave"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "enable_nanoda": true
+}
