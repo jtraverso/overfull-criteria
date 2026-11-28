@@ -132,4 +132,28 @@ theorem augmentation_saturated_card_paper_bound
   dsimp [threshold] at hSum
   linarith only [hSum]
 
+/-- Choose the integer target used in (5.12) from explicit margins.
+The quadratic margin pays for at most d₀*n/100 saturated vertices
+when combined with the paper's incidence bound. -/
+theorem exists_augmentation_target_of_scaled_margins (ℓ s n : ℕ) (z d₀ : ℝ)
+    (hz : 0 ≤ z)
+    (hLocal : (ℓ:ℝ)*z+2 ≤ d₀*n/100)
+    (hGlobal : (s:ℝ)*((ℓ:ℝ)*z+2) ≤ d₀^3*(n:ℝ)^2/40000) :
+    ∃ b : ℕ, (ℓ:ℝ)*z+1 ≤ b ∧ (b:ℝ) < d₀*n/100 ∧
+      (s:ℝ)*(b:ℝ) ≤ d₀^3*(n:ℝ)^2/40000 := by
+  let target : ℝ := (ℓ:ℝ)*z
+  let b := ⌈target⌉₊ + 1
+  have hLow := Nat.le_ceil target
+  have hHigh := Nat.ceil_lt_add_one (show 0 ≤ target by positivity)
+  have hbLow : target+1 ≤ (b:ℝ) := by
+    dsimp [b]
+    push_cast
+    linarith only [hLow]
+  have hbHigh : (b:ℝ) < target+2 := by
+    dsimp [b]
+    push_cast
+    linarith only [hHigh]
+  exact ⟨b, hbLow, hbHigh.trans_le hLocal,
+    (mul_le_mul_of_nonneg_left hbHigh.le (Nat.cast_nonneg s)).trans hGlobal⟩
+
 end OverfullWork.ChenShan
