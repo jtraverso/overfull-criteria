@@ -405,7 +405,7 @@ theorem exists_canonical_augmentation_of_interval_matrices
 /-- Convert the occupied sets after the two augmentations into
 the sets U and W on each successive pair of the special path
 system. They have size b even at the shared boundaries. -/
-theorem canonical_augmented_occupied_sets {B J : Type*} {ℓ : ℕ}
+theorem canonical_augmented_occupied_sets [DecidableEq V] {B J : Type*} {ℓ : ℕ}
     (A : B → ℕ → Finset V) (left right : B → J → Fin 2 → Finset V) (b : ℕ)
     (hL : ∀ c j (u : Fin 2) (x : Fin ℓ),
       (A c (2*x.val+if u=0 then 0 else 2) ∩ left c j u).card = b)
