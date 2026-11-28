@@ -80,7 +80,10 @@ theorem exists_balanced_palette_selection_of_corrections [Fintype V]
       (∀ v, (role v).isCore = false →
         paletteCopyDegree ends selected v = paletteCopyDegree ends original v) ∧
       palettePlusCopies ends role core = palettePlusCopies ends role correction ∧
-      paletteMinusCopies ends role core = paletteMinusCopies ends role correction := by
+      paletteMinusCopies ends role core = paletteMinusCopies ends role correction ∧
+      (∀ d ∈ selected, (role (ends d).1).isLowCore (role (ends d).2) = false) ∧
+      (∀ v, (role v).isCore = false →
+        (paletteCoreRow ends role selected v).card = (paletteCoreRow ends role original v).card) := by
   classical
   let Z := (univ : Finset V).filter (fun v => (role v).isCore = false)
   have hZ (v : V) : v ∈ Z ↔ (role v).isCore = false := by simp [Z]
@@ -189,7 +192,7 @@ theorem exists_balanced_palette_selection_of_corrections [Fintype V]
     · rcases mem_union.mp h with h | h
       · exact hKLow d h
       · exact (hNeutral d (mem_union_right _ h)).2.2
-  refine ⟨core,subset_union_left,hAvail,hCore,?_,?_,hPlus.2,hMinus.2⟩
+  refine ⟨core,subset_union_left,hAvail,hCore,?_,?_,hPlus.2,hMinus.2,hLow,hRows⟩
   · apply palette_selection_balanced_of_rows_and_corrections ends role original selected
       hOldLow hLow hOld (fun v hv => hRows v (nonzero_preferredSign_is_exceptional _ hv))
     unfold palettePlusCopies paletteMinusCopies at hKGap ⊢
@@ -238,6 +241,11 @@ structure IsPaletteBlockSelection (ends : D → V × V) (role : V → PaletteVer
     (palettePlusCopies ends role original).card-(paletteMinusCopies ends role original).card
   minus_size : (paletteMinusCopies ends role core).card =
     (paletteMinusCopies ends role original).card-(palettePlusCopies ends role original).card
+  no_low_core : ∀ d ∈ paletteExceptionalCopies ends role original ∪ core,
+    (role (ends d).1).isLowCore (role (ends d).2) = false
+  rows : ∀ v, (role v).isCore = false →
+    (paletteCoreRow ends role (paletteExceptionalCopies ends role original ∪ core) v).card =
+      (paletteCoreRow ends role original v).card
 
 theorem PaletteBlockSelectionInput.exists_selection [Fintype V]
     {ends : D → V × V} {role : V → PaletteVertexRole}
@@ -247,13 +255,13 @@ theorem PaletteBlockSelectionInput.exists_selection [Fintype V]
     (hLow : ∀ d ∈ original, (role (ends d).1).isLowCore (role (ends d).2) = false) :
     ∃ core, IsPaletteBlockSelection ends role block original available core := by
   have hGap := palette_correction_gap_of_exact_sizes _ _ _ _ A.plus_size A.minus_size
-  obtain ⟨S,_,hAvail,hBlock,hBal,hDeg,hPlus,hMinus⟩ :=
+  obtain ⟨S,_,hAvail,hBlock,hBal,hDeg,hPlus,hMinus,hNoLow,hRows⟩ :=
     exists_balanced_palette_selection_of_corrections ends role block original available
       A.correction A.pool hOld hLow A.correction_available A.correction_in_block
       A.correction_no_low hGap A.cap A.enough_preferred A.preferred_available
       A.preferred_in_block A.preferred_in_row A.preferred_neutral A.preferred_disjoint
   exact ⟨S,hAvail,hBlock,hBal,hDeg,(congrArg Finset.card hPlus).trans A.plus_size,
-    (congrArg Finset.card hMinus).trans A.minus_size⟩
+    (congrArg Finset.card hMinus).trans A.minus_size,hNoLow,hRows⟩
 
 /-- Select all fine blocks first, and choose coarse data only after
 deleting the selected fine core copies. At this point both families

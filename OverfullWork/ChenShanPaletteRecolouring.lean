@@ -220,4 +220,65 @@ theorem palette_complement_card {I : Type*} [Fintype I] {k : ℕ}
   rw [card_compl, Fintype.card_fin, card_biUnion]
   exact fun _ _ _ _ hij => hDisj hij
 
+omit [Fintype V] in
+/-- Connect the selected rows of indexed copies to the actual degree
+into the core. -/
+theorem paletteCopySubgraph_degreeInto_eq_row
+    (M : MultiGraph V) (S : Finset (Copies M)) (role : V → PaletteVertexRole)
+    (U : Finset V) (hU : ∀ u, (role u).isCore = true ↔ u ∈ U) (v : V) :
+    (paletteCopySubgraph M S).degreeInto U v = (paletteCoreRow (ends M) role S v).card := by
+  let f : V ↪ Sym2 V := ⟨fun u => s(v,u), by
+    intro u w huv
+    rcases Sym2.eq_iff.mp huv with h | h
+    · exact h.2
+    · exact h.2.trans h.1⟩
+  calc
+    _ = ∑ e ∈ U.map f, (S.filter (fun d => d.1 = e)).card := by
+      rw [sum_map]
+      rfl
+    _ = _ := by
+      rw [sum_card_fiberwise_eq_card_filter S (U.map f) Sigma.fst]
+      unfold paletteCoreRow
+      congr 1
+      ext d
+      simp only [mem_filter, mem_map, hU]
+      refine and_congr_right (fun _ => ?_)
+      constructor
+      · rintro ⟨u, hu, he⟩
+        have h := Sym2.eq_iff.mp ((endpoints_eq d.1).trans he.symm)
+        rcases h with h | h
+        · exact Or.inl ⟨h.1, h.2 ▸ hu⟩
+        · exact Or.inr ⟨h.2, h.1 ▸ hu⟩
+      · rintro (⟨hv, hu⟩ | ⟨hv, hu⟩)
+        · refine ⟨_, hu, ?_⟩
+          exact (endpoints_eq d.1).symm ▸ congrArg (fun x => s(x,(ends M d).2)) hv.symm
+        · refine ⟨_, hu, ?_⟩
+          change s(v,(ends M d).1) = d.1
+          rw [← endpoints_eq d.1, Sym2.eq_swap]
+          change s((ends M d).1,v) = s((ends M d).1,(ends M d).2)
+          rw [hv]
+
+/-- Removing the selected blocks loses at most their total degree
+budget from an exceptional vertex's core row. -/
+theorem paletteCopySubgraph_degreeInto_complement_lower
+    {I : Type*} [Fintype I] (M : MultiGraph V) (S : I → Finset (Copies M))
+    (hDisj : Pairwise (fun i j => Disjoint (S i) (S j))) (U : Finset V)
+    (v : V) (size : I → ℕ) (hSize : ∀ i, (paletteCopySubgraph M (S i)).degree v ≤ size i) :
+    M.degreeInto U v ≤
+      (paletteCopySubgraph M (univ \ univ.biUnion S)).degreeInto U v + ∑ i, size i := by
+  let R := paletteCopySubgraph M (univ \ univ.biUnion S)
+  have hPartition (u : V) : R.mult s(v,u) +
+      ∑ i, (paletteCopySubgraph M (S i)).mult s(v,u) = M.mult s(v,u) := by
+    simp only [R, paletteCopySubgraph]
+    rw [card_filter_add_sum_card_filter_of_disjoint S hDisj, edge_fibre_card]
+  have hSum : R.degreeInto U v + ∑ i, (paletteCopySubgraph M (S i)).degreeInto U v =
+      M.degreeInto U v := by
+    unfold MultiGraph.degreeInto
+    rw [sum_comm (s := (univ : Finset I)), ← sum_add_distrib]
+    exact sum_congr rfl fun u _ => hPartition u
+  rw [← hSum]
+  exact Nat.add_le_add_left (sum_le_sum fun i _ =>
+    (Nat.le_add_right _ _ |>.trans_eq ((paletteCopySubgraph M (S i)).degreeInto_add_compl U v)).trans
+      (hSize i)) _
+
 end OverfullWork.ChenShan
