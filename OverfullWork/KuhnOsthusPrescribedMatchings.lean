@@ -26,6 +26,46 @@ private theorem card_filter_le_free_add_removed (A S : Finset V) (p : V → Prop
     · exact mem_union_left _ (mem_filter.mpr ⟨mem_sdiff.mpr ⟨hA,hs⟩,hp⟩)
   exact (card_le_card hSub).trans (card_union_le _ _)
 
+/-- Equal small deletions from a lower-superregular pair leave a
+perfect matching on the remaining vertices. -/
+theorem IsLowerSuperregularPair.exists_matching_on_free_vertices
+    (G : Digraph V) (A B A₀ B₀ : Finset V) (d ε : ℝ) (r : ℕ)
+    (hPair : IsLowerSuperregularPair G ε d A B)
+    (hA : A₀ ⊆ A) (hB : B₀ ⊆ B) (hBal : A.card = B.card) (hBal₀ : A₀.card = B₀.card)
+    (hGap : 2*ε < d) (hr : 0 < r) (hCut : (A.card:ℝ)*ε ≤ (r:ℝ))
+    (hMargin : (r:ℝ)+(A₀.card:ℝ) ≤ (d-ε)*(A.card:ℝ)) :
+    ∃ g : ↥(A \ A₀) ≃ ↥(B \ B₀), ∀ a : ↥(A \ A₀), G.Adj a (g a) := by
+  let A' := A \ A₀
+  let B' := B \ B₀
+  have hFree : A'.card = B'.card := by simp only [A',B',card_sdiff_of_subset hA,card_sdiff_of_subset hB,hBal,hBal₀]
+  obtain ⟨hOut,hIn,hRect⟩ := IsLowerSuperregularPair.physical_lower_bounds G A B d ε hPair
+  have hCutB : (B.card:ℝ)*ε ≤ (r:ℝ) := hBal ▸ hCut
+  apply exists_matching_on_of_rectangle_threshold G A' B' r hFree
+  · intro x hx
+    have h₁ := hOut x (mem_sdiff.mp hx).1
+    rw [←hBal] at h₁
+    have h₂ : r + A₀.card ≤ (B.filter (G.Adj x)).card := by exact_mod_cast hMargin.trans h₁
+    have h₃ := card_filter_le_free_add_removed B B₀ (G.Adj x)
+    change r ≤ (B'.filter (G.Adj x)).card
+    dsimp [B']
+    omega
+  · intro y hy
+    have h₁ := hIn y (mem_sdiff.mp hy).1
+    have h₂ : r + A₀.card ≤ inNeighbours G A y := by exact_mod_cast hMargin.trans h₁
+    have h₃ := card_filter_le_free_add_removed A A₀ (fun x => G.Adj x y)
+    change r ≤ (A'.filter (fun x => G.Adj x y)).card
+    change r + A₀.card ≤ (A.filter (fun x => G.Adj x y)).card at h₂
+    dsimp [A']
+    omega
+  · intro X hX Y hY hx hy
+    have hx' : (r:ℝ) ≤ X.card := by exact_mod_cast hx
+    have hy' : (r:ℝ) ≤ Y.card := by exact_mod_cast hy
+    have hr' : (0:ℝ) < r := by exact_mod_cast hr
+    have h := hRect X (hX.trans sdiff_subset) Y (hY.trans sdiff_subset)
+      (hCut.trans hx') (hCutB.trans hy')
+    exact_mod_cast (mul_pos (mul_pos (sub_pos.mpr hGap) (hr'.trans_le hx'))
+      (hr'.trans_le hy')).trans_le h
+
 /-- Complete a matching already fixed on (A₀,B₀). The remaining
 vertices are paired by Hall, while the prescribed edges keep their
 original endpoints. -/
@@ -42,36 +82,8 @@ theorem IsLowerSuperregularPair.extend_prescribed_matching (G : Digraph V) (A B 
     simpa only [Fintype.card_coe] using Fintype.card_congr f
   let A' := A \ A₀
   let B' := B \ B₀
-  have hFree : A'.card = B'.card := by simp only [A',B',card_sdiff_of_subset hA,card_sdiff_of_subset hB,hBal,hBal₀]
-  obtain ⟨hOut,hIn,hRect⟩ := IsLowerSuperregularPair.physical_lower_bounds G A B d ε hPair
-  have hCutB : (B.card:ℝ)*ε ≤ (r:ℝ) := hBal ▸ hCut
-  have hMatching : ∃ g : A' ≃ B', ∀ a : A', G.Adj a (g a) := by
-    apply exists_matching_on_of_rectangle_threshold G A' B' r hFree
-    · intro x hx
-      have h₁ := hOut x (mem_sdiff.mp hx).1
-      rw [←hBal] at h₁
-      have h₂ : r + A₀.card ≤ (B.filter (G.Adj x)).card := by exact_mod_cast hMargin.trans h₁
-      have h₃ := card_filter_le_free_add_removed B B₀ (G.Adj x)
-      change r ≤ (B'.filter (G.Adj x)).card
-      dsimp [B']
-      omega
-    · intro y hy
-      have h₁ := hIn y (mem_sdiff.mp hy).1
-      have h₂ : r + A₀.card ≤ inNeighbours G A y := by exact_mod_cast hMargin.trans h₁
-      have h₃ := card_filter_le_free_add_removed A A₀ (fun x => G.Adj x y)
-      change r ≤ (A'.filter (fun x => G.Adj x y)).card
-      change r + A₀.card ≤ (A.filter (fun x => G.Adj x y)).card at h₂
-      dsimp [A']
-      omega
-    · intro X hX Y hY hx hy
-      have hx' : (r:ℝ) ≤ X.card := by exact_mod_cast hx
-      have hy' : (r:ℝ) ≤ Y.card := by exact_mod_cast hy
-      have hr' : (0:ℝ) < r := by exact_mod_cast hr
-      have h := hRect X (hX.trans sdiff_subset) Y (hY.trans sdiff_subset)
-        (hCut.trans hx') (hCutB.trans hy')
-      exact_mod_cast (mul_pos (mul_pos (sub_pos.mpr hGap) (hr'.trans_le hx'))
-        (hr'.trans_le hy')).trans_le h
-  obtain ⟨g,hg⟩ := hMatching
+  obtain ⟨g,hg⟩ := IsLowerSuperregularPair.exists_matching_on_free_vertices
+    G A B A₀ B₀ d ε r hPair hA hB hBal hBal₀ hGap hr hCut hMargin
   let e (x : A) : B :=
     if hx : x.val ∈ A₀ then ⟨(f ⟨x.val,hx⟩).val,hB (f ⟨x.val,hx⟩).prop⟩
     else ⟨(g ⟨x.val,mem_sdiff.mpr ⟨x.prop,hx⟩⟩).val,
