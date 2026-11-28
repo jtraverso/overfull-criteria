@@ -10,7 +10,8 @@ namespace OverfullWork.ChenShan
 open Finset
 open scoped Classical
 
-private theorem card_occupied_cluster_le
+/-- Count occupied vertices of a cluster using only its own requests. -/
+theorem card_occupied_cluster_le
     {E I J V : Type*} [DecidableEq V]
     (T : Finset E) (L : I → Finset V) (R : J → Finset V) (i : I)
     (src : E → I) (dst : E → J) (f g : E → V) (blocked : Finset V)
@@ -36,7 +37,8 @@ private theorem card_occupied_cluster_le
         exact (disjoint_left.mp (hCross i (dst e)) hxi (hg e he)).elim
     _ ≤ _ := (card_union_le _ _).trans (Nat.add_le_add_left card_image_le _)
 
-private theorem card_filter_lt_of_fresh
+/-- A fresh request strictly increases the total for its filter. -/
+theorem card_filter_lt_of_fresh
     {E : Type*} (Q T : Finset E) (e : E) (heQ : e ∈ Q) (heT : e ∉ T) (hT : T ⊆ Q)
     (P : E → Prop) [DecidablePred P] (he : P e) :
     (T.filter P).card < (Q.filter P).card := by
@@ -148,33 +150,35 @@ private theorem card_requests_to {I : Type*} [Fintype I] (H : I → I → ℕ) (
     simp [h]
   · simp
 
-private theorem card_cluster_after_augmentation {E I V : Type*} [Fintype E] [DecidableEq V]
-    (C : I → Finset V) (label : E → I) (f : E → V) (blocked : Finset V) (i : I)
+/-- Recover the exact covered count from the realized requests. -/
+theorem card_cluster_after_augmentation {E I V : Type*} [DecidableEq V]
+    (T : Finset E) (C : I → Finset V) (label : E → I) (f : E → V) (blocked : Finset V) (i : I)
     (hC : Pairwise (fun i j => Disjoint (C i) (C j)))
-    (hf : Function.Injective f) (hMem : ∀ e, f e ∈ C (label e))
-    (hFree : ∀ e, f e ∉ blocked) :
-    (C i ∩ (blocked ∪ univ.image f)).card =
-      (C i ∩ blocked).card + (univ.filter (fun e => label e = i)).card := by
-  let S := (univ : Finset E).filter (fun e => label e = i)
-  have hEq : C i ∩ univ.image f = S.image f := by
+    (hf : Set.InjOn f (T : Set E)) (hMem : ∀ e ∈ T, f e ∈ C (label e))
+    (hFree : ∀ e ∈ T, f e ∉ blocked) :
+    (C i ∩ (blocked ∪ T.image f)).card =
+      (C i ∩ blocked).card + (T.filter (fun e => label e = i)).card := by
+  let S := T.filter (fun e => label e = i)
+  have hEq : C i ∩ T.image f = S.image f := by
     ext v
     constructor
     · intro hv
       obtain ⟨hCiv, hImage⟩ := mem_inter.mp hv
-      obtain ⟨e, _, rfl⟩ := mem_image.mp hImage
+      obtain ⟨e, he, rfl⟩ := mem_image.mp hImage
       have hLabel : label e = i := by
         by_contra hn
-        exact disjoint_left.mp (hC hn) (hMem e) hCiv
-      exact mem_image_of_mem _ (mem_filter.mpr ⟨mem_univ _, hLabel⟩)
+        exact disjoint_left.mp (hC hn) (hMem e he) hCiv
+      exact mem_image_of_mem _ (mem_filter.mpr ⟨he, hLabel⟩)
     · intro hv
       obtain ⟨e, he, rfl⟩ := mem_image.mp hv
-      exact mem_inter.mpr ⟨(mem_filter.mp he).2 ▸ hMem e, mem_image_of_mem _ (mem_univ _)⟩
+      exact mem_inter.mpr ⟨(mem_filter.mp he).2 ▸ hMem e (mem_filter.mp he).1, mem_image_of_mem _ (mem_filter.mp he).1⟩
   have hDisj : Disjoint (C i ∩ blocked) (S.image f) := by
     apply disjoint_left.mpr
     intro v hv hImage
-    obtain ⟨e, _, rfl⟩ := mem_image.mp hImage
-    exact hFree e (mem_inter.mp hv).2
-  rw [inter_union_distrib_left, hEq, card_union_of_disjoint hDisj, card_image_of_injective _ hf]
+    obtain ⟨e, he, rfl⟩ := mem_image.mp hImage
+    exact hFree e (mem_filter.mp he).1 (mem_inter.mp hv).2
+  rw [inter_union_distrib_left, hEq, card_union_of_disjoint hDisj]
+  rw [card_image_of_injOn (fun _ hx _ hy eq => hf (mem_filter.mp hx).1 (mem_filter.mp hy).1 eq)]
 
 /-- The augmentation in §5.1.5. Realize the loads on the cluster
 cycle with an actual matching. Each cluster ends up with exactly
@@ -222,12 +226,12 @@ theorem exists_clusterCycle_augmentation_matching
   have hE (e : E) := hMem e (mem_univ e)
   refine ⟨H, f, g, hInjectF, hInjectG, fun e => ⟨hAllowed e, hE e⟩, ?_, ?_⟩
   · intro i
-    rw [card_cluster_after_augmentation L src f blocked i hL hInjectF
-      (fun e => (hE e).1) (fun e => (hE e).2.2.1)]
+    rw [card_cluster_after_augmentation univ L src f blocked i hL hfi
+      (fun e _ => (hE e).1) (fun e _ => (hE e).2.2.1)]
     exact (congrArg ((L i ∩ blocked).card + ·) (card_requests_from H i)).trans (hRow i)
   · intro j
-    rw [card_cluster_after_augmentation R dst g blocked j hR hInjectG
-      (fun e => (hE e).2.1) (fun e => (hE e).2.2.2.1)]
+    rw [card_cluster_after_augmentation univ R dst g blocked j hR hgi
+      (fun e _ => (hE e).2.1) (fun e _ => (hE e).2.2.2.1)]
     exact (congrArg ((R j ∩ blocked).card + ·) (card_requests_to H j)).trans (hCol j)
 
 
